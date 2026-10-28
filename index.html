@@ -3,1730 +3,1505 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-  <meta name="theme-color" content="#07100d">
-  <meta name="description" content="可离线使用、可直接分享的单文件网页计算器">
-  <title>简易计算器 · 单文件版</title>
-  <link rel="icon" type="image/svg+xml" href="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCA2NCA2NCI+PGRlZnM+PGxpbmVhckdyYWRpZW50IGlkPSJnIiB4MT0iMTAiIHkxPSI2IiB4Mj0iNTQiIHkyPSI2MCIgZ3JhZGllbnRVbml0cz0idXNlclNwYWNlT25Vc2UiPjxzdG9wIHN0b3AtY29sb3I9IiNlMWZmOWIiLz48c3RvcCBvZmZzZXQ9IjAuNTUiIHN0b3AtY29sb3I9IiNjMmVmNjYiLz48c3RvcCBvZmZzZXQ9IjEiIHN0b3AtY29sb3I9IiNhNmQ5NGMiLz48L2xpbmVhckdyYWRpZW50PjwvZGVmcz48cmVjdCB3aWR0aD0iNjQiIGhlaWdodD0iNjQiIHJ4PSIxNiIgZmlsbD0iIzBhMTIwZSIvPjxyZWN0IHg9IjkiIHk9IjkiIHdpZHRoPSI0NiIgaGVpZ2h0PSI0NiIgcng9IjEyIiBmaWxsPSJ1cmwoI2cpIi8+PHRleHQgeD0iMzIiIHk9IjQwIiB0ZXh0LWFuY2hvcj0ibWlkZGxlIiBmb250LWZhbWlseT0iQ29uc29sYXMsIG1vbm9zcGFjZSIgZm9udC1zaXplPSIyMCIgZm9udC13ZWlnaHQ9IjcwMCIgZmlsbD0iIzBiMTMwOCI+SlM8L3RleHQ+PC9zdmc+">
+  <meta name="theme-color" content="#19070b">
+  <title>指尖花 · Fingertip Bloom</title>
   <style>
-:root {
-  color-scheme: dark;
-  --bg: #050a08;
-  --text: #f3f8f3;
-  --text-soft: #d4dfd8;
-  --muted: #82958c;
-  --muted-dim: #5f7068;
-  --accent: #c7f36b;
-  --accent-bright: #dcff93;
-  --accent-deep: #a8da4e;
-  --warm: #ffb37c;
-  --danger: #ff8f7a;
-  --line: rgba(255, 255, 255, 0.075);
-  --line-strong: rgba(255, 255, 255, 0.13);
-  --font-ui: "Segoe UI Variable Text", "Segoe UI", "Microsoft YaHei UI", "Microsoft YaHei", sans-serif;
-  --font-display: "Bahnschrift", "Segoe UI Variable Display", "Segoe UI", "Microsoft YaHei UI", sans-serif;
-  --font-mono: "Cascadia Mono", "Consolas", "SFMono-Regular", monospace;
-}
-
-* {
-  box-sizing: border-box;
-}
-
-html {
-  min-height: 100%;
-  background: var(--bg);
-}
-
-body {
-  min-height: 100svh;
-  margin: 0;
-  padding: 32px 20px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  overflow-x: hidden;
-  color: var(--text);
-  font-family: var(--font-ui);
-  background:
-    radial-gradient(900px 680px at 6% -4%, rgba(68, 112, 76, 0.28), transparent 66%),
-    radial-gradient(820px 650px at 104% 106%, rgba(145, 88, 46, 0.2), transparent 64%),
-    linear-gradient(145deg, #07100d 0%, #040807 52%, #050a08 100%);
-  -webkit-font-smoothing: antialiased;
-  text-rendering: optimizeLegibility;
-}
-
-button,
-input {
-  font: inherit;
-}
-
-button {
-  color: inherit;
-}
-
-.ambient {
-  position: fixed;
-  inset: 0;
-  z-index: 0;
-  overflow: hidden;
-  pointer-events: none;
-}
-
-.ambient__glow {
-  position: absolute;
-  display: block;
-  border-radius: 50%;
-  filter: blur(96px);
-  will-change: transform;
-}
-
-.ambient__glow--lime {
-  width: 520px;
-  height: 520px;
-  top: -170px;
-  left: calc(50% - 520px);
-  background: rgba(87, 133, 61, 0.66);
-  opacity: 0.42;
-  animation: drift-lime 20s ease-in-out infinite alternate;
-}
-
-.ambient__glow--amber {
-  width: 470px;
-  height: 470px;
-  right: calc(50% - 500px);
-  bottom: -210px;
-  background: rgba(154, 88, 41, 0.6);
-  opacity: 0.25;
-  animation: drift-amber 24s ease-in-out infinite alternate;
-}
-
-.ambient__grid {
-  position: absolute;
-  inset: 0;
-  opacity: 0.55;
-  background-image:
-    linear-gradient(rgba(255, 255, 255, 0.024) 1px, transparent 1px),
-    linear-gradient(90deg, rgba(255, 255, 255, 0.024) 1px, transparent 1px);
-  background-size: 72px 72px;
-  -webkit-mask-image: radial-gradient(ellipse 75% 65% at 50% 46%, #000 10%, transparent 78%);
-  mask-image: radial-gradient(ellipse 75% 65% at 50% 46%, #000 10%, transparent 78%);
-}
-
-.page {
-  position: relative;
-  z-index: 1;
-  width: min(100%, 460px);
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 21px;
-}
-
-.calculator {
-  position: relative;
-  width: 100%;
-  padding: 23px;
-  border: 1px solid rgba(255, 255, 255, 0.095);
-  border-radius: 34px;
-  background:
-    radial-gradient(125% 90% at 50% -10%, rgba(255, 255, 255, 0.075), transparent 56%),
-    linear-gradient(155deg, rgba(25, 36, 31, 0.96) 0%, rgba(13, 20, 17, 0.975) 56%, rgba(9, 14, 12, 0.985) 100%);
-  box-shadow:
-    0 52px 105px -32px rgba(0, 0, 0, 0.86),
-    0 22px 44px -24px rgba(0, 0, 0, 0.64),
-    inset 0 1px 0 rgba(255, 255, 255, 0.075);
-  backdrop-filter: blur(24px) saturate(112%);
-  animation: card-in 720ms cubic-bezier(0.16, 1, 0.3, 1) both;
-}
-
-.calculator::before {
-  content: "";
-  position: absolute;
-  top: -1px;
-  left: 18%;
-  right: 18%;
-  height: 1px;
-  background: linear-gradient(90deg, transparent, rgba(199, 243, 107, 0.55), transparent);
-  opacity: 0.7;
-  pointer-events: none;
-}
-
-.calculator::after {
-  content: "";
-  position: absolute;
-  inset: 0;
-  border-radius: inherit;
-  box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.018);
-  pointer-events: none;
-}
-
-.calculator__header {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 14px;
-}
-
-.brand {
-  display: flex;
-  align-items: center;
-  min-width: 0;
-  gap: 12px;
-}
-
-.brand__logo {
-  flex: 0 0 auto;
-  width: 47px;
-  height: 47px;
-  padding: 0 0 1px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  border-radius: 15px;
-  color: #0a1208;
-  background: linear-gradient(145deg, #deff92 0%, #c2ef66 58%, #a6d94c 100%);
-  box-shadow:
-    0 10px 24px rgba(166, 217, 76, 0.17),
-    inset 0 1px 0 rgba(255, 255, 255, 0.58);
-  font-family: var(--font-mono);
-  font-size: 18px;
-  font-weight: 700;
-  letter-spacing: -1px;
-  line-height: 1;
-  user-select: none;
-}
-
-.brand__copy {
-  min-width: 0;
-}
-
-.brand__eyebrow {
-  margin: 0 0 4px;
-  color: var(--muted-dim);
-  font-family: var(--font-mono);
-  font-size: 8.5px;
-  font-weight: 600;
-  letter-spacing: 0.16em;
-  line-height: 1;
-  white-space: nowrap;
-}
-
-.brand__title {
-  margin: 0;
-  color: var(--text);
-  font-size: 20px;
-  font-weight: 600;
-  letter-spacing: -0.025em;
-  line-height: 1.15;
-  white-space: nowrap;
-}
-
-.status {
-  flex: 0 0 auto;
-  display: flex;
-  align-items: center;
-  gap: 6px;
-  padding: 6px 9px;
-  border: 1px solid var(--line);
-  border-radius: 999px;
-  color: var(--muted);
-  background: rgba(255, 255, 255, 0.028);
-  font-size: 10px;
-  font-weight: 600;
-  letter-spacing: 0.035em;
-  line-height: 1;
-  white-space: nowrap;
-  transition: color 180ms ease, border-color 180ms ease, background 180ms ease;
-}
-
-.status__dot {
-  width: 6px;
-  height: 6px;
-  border-radius: 50%;
-  background: var(--muted);
-}
-
-.status[data-state="online"] {
-  color: var(--warm);
-  border-color: rgba(255, 179, 124, 0.17);
-  background: rgba(255, 179, 124, 0.055);
-}
-
-.status[data-state="checking"] .status__dot {
-  background: var(--warm);
-  animation: dot-blink 1.1s ease-in-out infinite;
-}
-
-.status[data-state="online"] {
-  color: #cfe9bb;
-  border-color: rgba(199, 243, 107, 0.15);
-  background: rgba(199, 243, 107, 0.055);
-}
-
-.status[data-state="online"] .status__dot {
-  background: var(--accent);
-  box-shadow: 0 0 0 4px rgba(199, 243, 107, 0.07);
-}
-
-.status[data-state="offline"] {
-  color: #ffc0b3;
-  border-color: rgba(255, 143, 122, 0.2);
-  background: rgba(255, 143, 122, 0.06);
-}
-
-.status[data-state="offline"] .status__dot {
-  background: var(--danger);
-}
-
-.screen {
-  position: relative;
-  min-height: 164px;
-  margin: 20px 0 16px;
-  padding: 16px 17px 14px;
-  display: flex;
-  flex-direction: column;
-  gap: 8px;
-  overflow: hidden;
-  border: 1px solid rgba(255, 255, 255, 0.062);
-  border-radius: 24px;
-  background:
-    radial-gradient(130% 130% at 102% 0%, rgba(199, 243, 107, 0.075), transparent 44%),
-    linear-gradient(180deg, rgba(3, 8, 6, 0.985), rgba(7, 13, 10, 0.94));
-  box-shadow:
-    inset 0 1px 18px rgba(0, 0, 0, 0.48),
-    0 12px 30px rgba(0, 0, 0, 0.17);
-  transition: border-color 180ms ease, box-shadow 180ms ease;
-}
-
-.screen::before {
-  content: "";
-  position: absolute;
-  inset: 0;
-  pointer-events: none;
-  background: linear-gradient(112deg, transparent 22%, rgba(255, 255, 255, 0.022) 49%, transparent 74%);
-  transform: translateX(-110%);
-  animation: screen-sheen 9s ease-in-out infinite;
-}
-
-.screen::after {
-  content: "";
-  position: absolute;
-  right: -16%;
-  bottom: -60%;
-  width: 230px;
-  height: 180px;
-  border-radius: 50%;
-  background: rgba(199, 243, 107, 0.045);
-  filter: blur(44px);
-  pointer-events: none;
-}
-
-.screen.is-error {
-  border-color: rgba(255, 143, 122, 0.42);
-  box-shadow:
-    inset 0 1px 18px rgba(0, 0, 0, 0.48),
-    0 0 0 1px rgba(255, 143, 122, 0.04),
-    0 16px 34px rgba(0, 0, 0, 0.18);
-}
-
-.screen.is-shaking {
-  animation: shake 320ms cubic-bezier(0.36, 0.07, 0.19, 0.97);
-}
-
-.screen__topline {
-  position: relative;
-  z-index: 1;
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 12px;
-  min-height: 16px;
-}
-
-.screen__history {
-  min-width: 0;
-  overflow: hidden;
-  color: var(--muted);
-  font-family: var(--font-mono);
-  font-size: 10px;
-  letter-spacing: 0.012em;
-  line-height: 1.4;
-  text-overflow: ellipsis;
-  white-space: nowrap;
-}
-
-.screen__badge {
-  flex: 0 0 auto;
-  padding: 3px 7px;
-  border: 1px solid rgba(255, 255, 255, 0.065);
-  border-radius: 999px;
-  color: var(--muted-dim);
-  font-family: var(--font-mono);
-  font-size: 8px;
-  font-weight: 600;
-  letter-spacing: 0.11em;
-  line-height: 1;
-}
-
-.screen__display {
-  position: relative;
-  z-index: 1;
-  margin-top: auto;
-  padding: 3px 0 1px;
-  overflow-x: auto;
-  overflow-y: hidden;
-  color: #f8fcf8;
-  font-family: var(--font-display);
-  font-size: clamp(2.85rem, 11.6vw, 3.7rem);
-  font-variant-numeric: tabular-nums;
-  font-weight: 500;
-  letter-spacing: -0.04em;
-  line-height: 1.08;
-  text-align: right;
-  text-shadow: 0 0 32px rgba(199, 243, 107, 0.055);
-  white-space: nowrap;
-  scrollbar-width: none;
-  transition: font-size 160ms ease;
-}
-
-.screen__display::-webkit-scrollbar {
-  display: none;
-}
-
-.screen__display.is-long {
-  font-size: clamp(2.15rem, 8.5vw, 2.8rem);
-  letter-spacing: -0.035em;
-}
-
-.screen__display.is-very-long {
-  font-size: clamp(1.55rem, 6.2vw, 2.05rem);
-  letter-spacing: -0.025em;
-}
-
-.screen__bottomline {
-  position: relative;
-  z-index: 1;
-  min-height: 16px;
-  display: flex;
-  align-items: flex-end;
-  justify-content: space-between;
-  gap: 10px;
-}
-
-.screen__hint {
-  color: var(--muted-dim);
-  font-size: 10.5px;
-  font-weight: 500;
-  letter-spacing: 0.015em;
-  line-height: 1.45;
-  overflow-wrap: anywhere;
-  transition: color 160ms ease;
-}
-
-.screen__hint.is-error {
-  color: var(--danger);
-  font-weight: 600;
-}
-
-.keypad {
-  display: grid;
-  grid-template-columns: repeat(4, minmax(0, 1fr));
-  gap: 10px;
-}
-
-.key {
-  position: relative;
-  height: 60px;
-  padding: 0;
-  border: 1px solid var(--line);
-  border-radius: 18px;
-  color: var(--text);
-  background: linear-gradient(180deg, rgba(255, 255, 255, 0.073), rgba(255, 255, 255, 0.031));
-  box-shadow:
-    inset 0 1px 0 rgba(255, 255, 255, 0.045),
-    0 6px 12px rgba(0, 0, 0, 0.075);
-  cursor: pointer;
-  font-family: var(--font-display);
-  font-size: 22px;
-  font-weight: 500;
-  line-height: 1;
-  user-select: none;
-  -webkit-tap-highlight-color: transparent;
-  transition:
-    transform 120ms cubic-bezier(0.2, 0.8, 0.2, 1),
-    background 160ms ease,
-    border-color 160ms ease,
-    box-shadow 160ms ease,
-    filter 120ms ease;
-}
-
-.key:hover {
-  border-color: var(--line-strong);
-  background: linear-gradient(180deg, rgba(255, 255, 255, 0.105), rgba(255, 255, 255, 0.046));
-}
-
-.key:active {
-  transform: translateY(1px) scale(0.977);
-  box-shadow: inset 0 2px 6px rgba(0, 0, 0, 0.18);
-}
-
-.key:focus-visible {
-  outline: 2px solid var(--accent);
-  outline-offset: 2px;
-}
-
-.key.is-keyboard {
-  filter: brightness(1.32);
-  transform: translateY(1px) scale(0.97);
-}
-
-.key--utility {
-  color: #aebdb5;
-  background: rgba(255, 255, 255, 0.034);
-  font-family: var(--font-ui);
-  font-size: 17px;
-  font-weight: 600;
-}
-
-.key--utility:hover {
-  background: rgba(255, 255, 255, 0.065);
-}
-
-.key--clear {
-  color: var(--warm);
-}
-
-.key--sign {
-  color: var(--text-soft);
-  font-size: 20px;
-}
-
-.key--number {
-  font-size: 23px;
-  font-weight: 500;
-}
-
-.key--operator {
-  color: var(--accent);
-  border-color: rgba(199, 243, 107, 0.115);
-  background:
-    linear-gradient(180deg, rgba(199, 243, 107, 0.105), rgba(199, 243, 107, 0.035));
-  font-size: 24px;
-  font-weight: 500;
-}
-
-.key--operator:hover {
-  border-color: rgba(199, 243, 107, 0.24);
-  background:
-    linear-gradient(180deg, rgba(199, 243, 107, 0.16), rgba(199, 243, 107, 0.055));
-}
-
-.key--operator:active {
-  background: rgba(199, 243, 107, 0.18);
-}
-
-.key__icon {
-  width: 24px;
-  height: 24px;
-  margin: 0 auto;
-  display: block;
-  fill: none;
-  stroke: currentColor;
-  stroke-width: 1.65;
-  stroke-linecap: round;
-  stroke-linejoin: round;
-}
-
-.key--equals {
-  grid-column: 1 / -1;
-  height: 58px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 10px;
-  border: 0;
-  color: #10170a;
-  background: linear-gradient(135deg, #d9ff8b 0%, #c2ef66 52%, #a9dc4f 100%);
-  box-shadow:
-    0 13px 28px rgba(168, 218, 78, 0.19),
-    0 5px 12px rgba(0, 0, 0, 0.16),
-    inset 0 1px 0 rgba(255, 255, 255, 0.52);
-}
-
-.key--equals:hover {
-  background: linear-gradient(135deg, #e2ffa0 0%, #c9f472 52%, #b0e456 100%);
-  filter: brightness(1.015);
-  transform: translateY(-1px);
-}
-
-.key--equals:active {
-  transform: translateY(1px) scale(0.988);
-  box-shadow:
-    0 7px 16px rgba(168, 218, 78, 0.15),
-    inset 0 2px 5px rgba(60, 82, 20, 0.18);
-}
-
-.key--equals__sign {
-  font-family: var(--font-display);
-  font-size: 25px;
-  font-weight: 600;
-  letter-spacing: -0.04em;
-  line-height: 1;
-}
-
-.key--equals__hint {
-  margin-top: 2px;
-  font-family: var(--font-mono);
-  font-size: 8.5px;
-  font-weight: 700;
-  letter-spacing: 0.18em;
-  line-height: 1;
-  opacity: 0.52;
-}
-
-.calculator__footer {
-  margin-top: 16px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 18px;
-  color: var(--muted-dim);
-  font-size: 10px;
-  font-weight: 500;
-  line-height: 1;
-}
-
-.shortcut {
-  display: inline-flex;
-  align-items: center;
-  gap: 6px;
-  white-space: nowrap;
-}
-
-kbd {
-  min-width: 21px;
-  padding: 4px 6px;
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  border: 1px solid rgba(255, 255, 255, 0.075);
-  border-bottom-color: rgba(255, 255, 255, 0.15);
-  border-radius: 6px;
-  color: #a8b8af;
-  background: rgba(255, 255, 255, 0.04);
-  box-shadow: 0 1px 0 rgba(0, 0, 0, 0.2);
-  font-family: var(--font-mono);
-  font-size: 8.5px;
-  line-height: 1;
-}
-
-.page__note {
-  margin: 0;
-  padding: 0 6px;
-  display: flex;
-  flex-wrap: wrap;
-  align-items: center;
-  justify-content: center;
-  gap: 7px;
-  color: rgba(195, 210, 201, 0.52);
-  font-size: 10.5px;
-  font-weight: 450;
-  letter-spacing: 0.015em;
-  line-height: 1.6;
-  text-align: center;
-  animation: fade-up 800ms 120ms cubic-bezier(0.16, 1, 0.3, 1) both;
-}
-
-.page__note strong {
-  color: rgba(199, 243, 107, 0.78);
-  font-weight: 650;
-}
-
-.page__url {
-  color: rgba(195, 210, 201, 0.62);
-  font-family: var(--font-mono);
-  font-size: 9.5px;
-  letter-spacing: -0.01em;
-}
-
-.page__pulse {
-  width: 5px;
-  height: 5px;
-  border-radius: 50%;
-  background: rgba(199, 243, 107, 0.72);
-  box-shadow: 0 0 0 4px rgba(199, 243, 107, 0.045);
-}
-
-.page__divider {
-  color: rgba(195, 210, 201, 0.22);
-}
-
-.noscript {
-  position: fixed;
-  left: 50%;
-  bottom: 20px;
-  z-index: 10;
-  transform: translateX(-50%);
-  padding: 10px 15px;
-  border: 1px solid rgba(255, 143, 122, 0.28);
-  border-radius: 10px;
-  color: #ffd0c6;
-  background: #251310;
-  font-family: var(--font-ui);
-  font-size: 12px;
-  white-space: nowrap;
-}
-
-@keyframes card-in {
-  from {
-    transform: translateY(18px) scale(0.99);
-  }
-  to {
-    transform: translateY(0) scale(1);
-  }
-}
-
-@keyframes fade-up {
-  from {
-    opacity: 0;
-    transform: translateY(8px);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
-}
-
-@keyframes drift-lime {
-  from {
-    transform: translate3d(-18px, -12px, 0) scale(0.97);
-  }
-  to {
-    transform: translate3d(38px, 34px, 0) scale(1.06);
-  }
-}
-
-@keyframes drift-amber {
-  from {
-    transform: translate3d(15px, 18px, 0) scale(1.02);
-  }
-  to {
-    transform: translate3d(-34px, -26px, 0) scale(0.95);
-  }
-}
-
-@keyframes dot-blink {
-  0%,
-  100% {
-    opacity: 0.42;
-  }
-  50% {
-    opacity: 1;
-  }
-}
-
-@keyframes screen-sheen {
-  0%,
-  45% {
-    transform: translateX(-110%);
-    opacity: 0;
-  }
-  52% {
-    opacity: 0.9;
-  }
-  70%,
-  100% {
-    transform: translateX(110%);
-    opacity: 0;
-  }
-}
-
-@keyframes shake {
-  10%,
-  90% {
-    transform: translateX(-1px);
-  }
-  20%,
-  80% {
-    transform: translateX(2px);
-  }
-  30%,
-  50%,
-  70% {
-    transform: translateX(-3px);
-  }
-  40%,
-  60% {
-    transform: translateX(3px);
-  }
-}
-
-@media (max-width: 480px) {
-  body {
-    padding: 24px 13px 20px;
-  }
-
-  .page {
-    gap: 17px;
-  }
-
-  .calculator {
-    padding: 18px;
-    border-radius: 29px;
-  }
-
-  .brand {
-    gap: 10px;
-  }
-
-  .brand__logo {
-    width: 43px;
-    height: 43px;
-    border-radius: 14px;
-    font-size: 20px;
-  }
-
-  .brand__title {
-    font-size: 18px;
-  }
-
-  .brand__eyebrow {
-    font-size: 7.8px;
-  }
-
-  .status {
-    padding: 6px 8px;
-    font-size: 9.5px;
-  }
-
-  .screen {
-    min-height: 151px;
-    margin: 16px 0 14px;
-    padding: 14px 15px 12px;
-    border-radius: 21px;
-  }
-
-  .screen__display {
-    font-size: clamp(2.7rem, 12.4vw, 3.35rem);
-  }
-
-  .screen__display.is-long {
-    font-size: clamp(2rem, 9vw, 2.55rem);
-  }
-
-  .screen__display.is-very-long {
-    font-size: clamp(1.4rem, 6.5vw, 1.85rem);
-  }
-
-  .keypad {
-    gap: 8px;
-  }
-
-  .key {
-    height: 55px;
-    border-radius: 16px;
-    font-size: 20px;
-  }
-
-  .key--number {
-    font-size: 22px;
-  }
-
-  .key--operator {
-    font-size: 22px;
-  }
-
-  .key--utility {
-    font-size: 16px;
-  }
-
-  .key--equals {
-    height: 54px;
-  }
-
-  .calculator__footer {
-    margin-top: 14px;
-    gap: 15px;
-  }
-
-  .page__note {
-    font-size: 9.8px;
-  }
-}
-
-@media (max-width: 360px) {
-  body {
-    padding: 14px 9px;
-  }
-
-  .calculator {
-    padding: 14px;
-    border-radius: 25px;
-  }
-
-  .brand__logo {
-    width: 39px;
-    height: 39px;
-    font-size: 18px;
-  }
-
-  .brand__title {
-    font-size: 17px;
-  }
-
-  .status__text {
-    display: none;
-  }
-
-  .key {
-    height: 51px;
-    border-radius: 14px;
-  }
-
-  .key--equals {
-    height: 50px;
-  }
-
-  .screen {
-    min-height: 142px;
-  }
-}
-
-@media (max-height: 730px) {
-  body {
-    align-items: flex-start;
-    padding-top: 16px;
-    padding-bottom: 16px;
-  }
-
-  .calculator {
-    padding: 17px;
-  }
-
-  .screen {
-    min-height: 126px;
-    margin: 14px 0 12px;
-    padding-top: 12px;
-    padding-bottom: 11px;
-  }
-
-  .screen__display {
-    font-size: clamp(2.35rem, 8vh, 3rem);
-  }
-
-  .key {
-    height: 47px;
-  }
-
-  .key--equals {
-    height: 46px;
-  }
-
-  .calculator__footer {
-    display: none;
-  }
-
-  .page {
-    gap: 13px;
-  }
-}
-
-@media (hover: none) {
-  .key:hover {
-    border-color: var(--line);
-    background: linear-gradient(180deg, rgba(255, 255, 255, 0.073), rgba(255, 255, 255, 0.031));
-  }
-
-  .key--operator:hover {
-    border-color: rgba(199, 243, 107, 0.115);
-    background: linear-gradient(180deg, rgba(199, 243, 107, 0.105), rgba(199, 243, 107, 0.035));
-  }
-
-  .key--equals:hover {
-    background: linear-gradient(135deg, #d9ff8b 0%, #c2ef66 52%, #a9dc4f 100%);
-    transform: none;
-  }
-}
-
-@media (prefers-reduced-motion: reduce) {
-  *,
-  *::before,
-  *::after {
-    animation-duration: 0.001ms !important;
-    animation-iteration-count: 1 !important;
-    scroll-behavior: auto !important;
-    transition-duration: 0.001ms !important;
-  }
-}
-
-</style>
+    :root {
+      --bg: #19070b;
+      --ink: #f7edf0;
+      --muted: #b98f9b;
+      --dim: #73505b;
+      --pink: #ff6fae;
+      --pink-soft: #ff9ac6;
+      --violet: #a763ff;
+      --line: rgba(255, 170, 200, 0.16);
+      --panel: rgba(20, 6, 10, 0.66);
+    }
+
+    * { box-sizing: border-box; }
+
+    html, body {
+      width: 100%;
+      height: 100%;
+      margin: 0;
+      overflow: hidden;
+      background: var(--bg);
+      color: var(--ink);
+      font-family: "Segoe UI Variable Text", "Segoe UI", "Microsoft YaHei UI", "Microsoft YaHei", sans-serif;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    body {
+      background:
+        radial-gradient(1100px 760px at 50% 44%, rgba(82, 15, 35, 0.48), transparent 64%),
+        radial-gradient(800px 600px at 14% 100%, rgba(85, 17, 28, 0.2), transparent 70%),
+        #19070b;
+    }
+
+    button, input { font: inherit; }
+
+    #scene {
+      position: fixed;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      display: block;
+      touch-action: none;
+      cursor: default;
+    }
+
+    body.mouse-mode #scene { cursor: ew-resize; }
+
+    .ui {
+      position: fixed;
+      z-index: 5;
+      pointer-events: none;
+    }
+
+    .brand {
+      top: clamp(20px, 4vw, 42px);
+      left: clamp(20px, 4vw, 48px);
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+      text-shadow: 0 2px 20px rgba(0, 0, 0, 0.45);
+    }
+
+    .brand h1 {
+      margin: 0;
+      font-size: clamp(22px, 2.4vw, 31px);
+      font-weight: 600;
+      letter-spacing: 0.14em;
+    }
+
+    .brand p {
+      margin: 0;
+      color: var(--muted);
+      font-size: 10px;
+      letter-spacing: 0.34em;
+      text-transform: uppercase;
+    }
+
+    .badge {
+      top: clamp(22px, 4vw, 42px);
+      right: clamp(20px, 4vw, 48px);
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 9px 13px;
+      border: 1px solid var(--line);
+      border-radius: 999px;
+      background: rgba(18, 5, 9, 0.42);
+      backdrop-filter: blur(16px);
+      color: var(--muted);
+      font-size: 10px;
+      letter-spacing: 0.2em;
+    }
+
+    .badge::before {
+      content: "";
+      width: 5px;
+      height: 5px;
+      border-radius: 50%;
+      background: var(--dim);
+      box-shadow: 0 0 10px transparent;
+      transition: background 0.3s, box-shadow 0.3s;
+    }
+
+    .badge.live { color: #ffd7e4; }
+    .badge.live::before {
+      background: var(--pink);
+      box-shadow: 0 0 12px rgba(255, 111, 174, 0.85);
+    }
+
+    .footer {
+      left: 50%;
+      bottom: clamp(18px, 3.3vw, 34px);
+      transform: translateX(-50%);
+      width: min(92vw, 720px);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 10px;
+      text-align: center;
+    }
+
+    .status {
+      display: inline-flex;
+      align-items: center;
+      gap: 9px;
+      color: #dfbcc7;
+      font-size: 11px;
+      letter-spacing: 0.08em;
+      text-shadow: 0 2px 18px rgba(0, 0, 0, 0.7);
+    }
+
+    .status::before {
+      content: "";
+      width: 5px;
+      height: 5px;
+      border-radius: 50%;
+      background: rgba(255, 111, 174, 0.7);
+      box-shadow: 0 0 10px rgba(255, 111, 174, 0.45);
+    }
+
+    .status.muted { color: var(--muted); }
+
+    .debug {
+      left: clamp(16px, 3vw, 38px);
+      bottom: clamp(16px, 3vw, 34px);
+      display: flex;
+      align-items: center;
+      gap: 11px;
+      padding: 10px 14px;
+      border: 1px solid var(--line);
+      border-radius: 14px;
+      background: var(--panel);
+      backdrop-filter: blur(18px);
+      pointer-events: auto;
+    }
+
+    .debug label {
+      color: var(--muted);
+      font-size: 9px;
+      letter-spacing: 0.16em;
+      white-space: nowrap;
+    }
+
+    .debug output {
+      min-width: 34px;
+      color: #ffd3e2;
+      font: 11px/1 "Cascadia Mono", "Consolas", monospace;
+      text-align: right;
+    }
+
+    #bloomSlider {
+      -webkit-appearance: none;
+      appearance: none;
+      width: clamp(78px, 10vw, 130px);
+      height: 3px;
+      border-radius: 999px;
+      outline: none;
+      background: linear-gradient(90deg, #7e2a51, #ff79b4);
+      cursor: pointer;
+    }
+
+    #bloomSlider::-webkit-slider-thumb {
+      -webkit-appearance: none;
+      appearance: none;
+      width: 12px;
+      height: 12px;
+      border: 2px solid #ffd4e3;
+      border-radius: 50%;
+      background: #ff6fae;
+      box-shadow: 0 0 12px rgba(255, 111, 174, 0.65);
+    }
+
+    #bloomSlider::-moz-range-thumb {
+      width: 10px;
+      height: 10px;
+      border: 2px solid #ffd4e3;
+      border-radius: 50%;
+      background: #ff6fae;
+      box-shadow: 0 0 12px rgba(255, 111, 174, 0.65);
+    }
+
+    .camera-panel {
+      right: clamp(16px, 3vw, 38px);
+      bottom: clamp(16px, 3vw, 38px);
+      width: clamp(150px, 15vw, 226px);
+      padding: 8px;
+      border: 1px solid rgba(255, 174, 204, 0.22);
+      border-radius: 17px;
+      background: rgba(15, 4, 8, 0.82);
+      box-shadow: 0 18px 50px rgba(0, 0, 0, 0.45);
+      backdrop-filter: blur(18px);
+      pointer-events: none;
+    }
+
+    .camera-panel.is-hidden { display: none; }
+
+    .camera-cap {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 1px 3px 7px;
+      color: #d9aebb;
+      font-size: 8px;
+      letter-spacing: 0.2em;
+    }
+
+    .camera-cap span:last-child { color: #8b626d; }
+
+    .camera-body {
+      position: relative;
+      overflow: hidden;
+      width: 100%;
+      aspect-ratio: 4 / 3;
+      border-radius: 11px;
+      background: #170a11;
+    }
+
+    #cameraVideo,
+    #handCanvas {
+      position: absolute;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+    }
+
+    #cameraVideo {
+      object-fit: cover;
+      transform: scaleX(-1);
+      filter: saturate(1.12) contrast(1.04) brightness(0.9);
+    }
+
+    #handCanvas { pointer-events: none; }
+
+    .welcome {
+      position: fixed;
+      inset: 0;
+      z-index: 20;
+      display: grid;
+      place-items: center;
+      padding: 24px;
+      background:
+        radial-gradient(900px 620px at 50% 50%, rgba(68, 12, 30, 0.55), transparent 68%),
+        rgba(12, 3, 6, 0.68);
+      backdrop-filter: blur(12px);
+      transition: opacity 0.7s ease, visibility 0.7s ease;
+    }
+
+    .welcome.is-gone {
+      opacity: 0;
+      visibility: hidden;
+      pointer-events: none;
+    }
+
+    .welcome-card {
+      width: min(92vw, 390px);
+      text-align: center;
+    }
+
+    .eyebrow {
+      margin-bottom: 18px;
+      color: #a87584;
+      font-size: 9px;
+      letter-spacing: 0.34em;
+    }
+
+    .welcome h2 {
+      margin: 0;
+      font-size: clamp(35px, 6vw, 58px);
+      font-weight: 500;
+      letter-spacing: 0.16em;
+    }
+
+    .welcome .en {
+      margin: 8px 0 20px;
+      color: #b88395;
+      font-size: 9px;
+      letter-spacing: 0.42em;
+    }
+
+    .welcome .copy {
+      margin: 0 auto 26px;
+      max-width: 300px;
+      color: #bb959f;
+      font-size: 12px;
+      line-height: 1.8;
+    }
+
+    .start-btn {
+      width: 100%;
+      padding: 14px 18px;
+      border: 1px solid rgba(255, 168, 199, 0.48);
+      border-radius: 999px;
+      background: linear-gradient(135deg, #ff7ab6, #b965ff);
+      color: #220612;
+      font-size: 13px;
+      font-weight: 700;
+      letter-spacing: 0.12em;
+      cursor: pointer;
+      box-shadow: 0 12px 40px rgba(198, 74, 139, 0.25);
+      transition: transform 0.2s ease, box-shadow 0.2s ease, opacity 0.2s ease;
+    }
+
+    .start-btn:hover {
+      transform: translateY(-1px);
+      box-shadow: 0 16px 48px rgba(198, 74, 139, 0.35);
+    }
+
+    .start-btn:disabled { opacity: 0.55; cursor: wait; }
+
+    .skip-btn {
+      margin-top: 14px;
+      padding: 8px 12px;
+      border: 0;
+      background: none;
+      color: #8f6975;
+      font-size: 10px;
+      letter-spacing: 0.08em;
+      cursor: pointer;
+    }
+
+    .skip-btn:hover { color: #e8cbd4; }
+
+    .welcome-note {
+      min-height: 16px;
+      margin: 14px 0 0;
+      color: #b46f82;
+      font-size: 10px;
+      line-height: 1.6;
+    }
+
+    @media (max-width: 640px) {
+      .debug {
+        left: 14px;
+        bottom: 14px;
+        padding: 8px 10px;
+      }
+
+      .camera-panel {
+        width: 138px;
+        right: 14px;
+        bottom: 14px;
+      }
+
+      .footer {
+        bottom: 58px;
+        width: 72vw;
+      }
+
+      .badge {
+        top: 18px;
+        right: 18px;
+        padding: 7px 10px;
+        font-size: 8px;
+      }
+
+      .brand { top: 18px; left: 18px; }
+      .brand h1 { font-size: 21px; }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      .welcome, .start-btn { transition: none; }
+    }
+  </style>
 </head>
 <body>
-  <div class="ambient" aria-hidden="true">
-    <span class="ambient__glow ambient__glow--lime"></span>
-    <span class="ambient__glow ambient__glow--amber"></span>
-    <span class="ambient__grid"></span>
+  <canvas id="scene" aria-label="粒子花场景"></canvas>
+
+  <header class="ui brand">
+    <h1>指尖花</h1>
+    <p>Fingertip Bloom</p>
+  </header>
+
+  <div class="ui badge" id="modeBadge">待机</div>
+
+  <div class="ui debug">
+    <label for="bloomSlider">BLOOM</label>
+    <input id="bloomSlider" type="range" min="0" max="1" step="0.001" value="0.04" aria-label="绽放进度">
+    <output id="bloomOutput">4%</output>
   </div>
 
-  <main class="page">
-    <section class="calculator" aria-labelledby="app-title">
-      <header class="calculator__header">
-        <div class="brand">
-          <div class="brand__logo" aria-hidden="true">JS</div>
-          <div class="brand__copy">
-            <p class="brand__eyebrow">STANDALONE / JS</p>
-            <h1 class="brand__title" id="app-title">简易计算器</h1>
-          </div>
-        </div>
+  <div class="ui camera-panel is-hidden" id="cameraPanel">
+    <div class="camera-cap">
+      <span>HAND TRACKING</span>
+      <span id="trackState">WAIT</span>
+    </div>
+    <div class="camera-body">
+      <video id="cameraVideo" muted playsinline autoplay></video>
+      <canvas id="handCanvas" width="320" height="240"></canvas>
+    </div>
+  </div>
 
-        <div class="status" id="serviceStatus" data-state="checking" aria-label="计算器状态">
-          <span class="status__dot" aria-hidden="true"></span>
-          <span class="status__text" id="statusText">本机运算</span>
-        </div>
-      </header>
+  <footer class="ui footer">
+    <div class="status muted" id="statusText">点击开启摄像头，或先用鼠标体验</div>
+  </footer>
 
-      <div class="screen" id="screen">
-        <div class="screen__topline">
-          <span class="screen__history" id="history" title="上一次计算">准备就绪</span>
-          <span class="screen__badge">JS</span>
-        </div>
+  <div class="welcome" id="welcome">
+    <div class="welcome-card">
+      <div class="eyebrow">THREE.JS × MEDIAPIPE</div>
+      <h2>指尖花</h2>
+      <p class="en">FINGERTIP BLOOM</p>
+      <p class="copy">张开手掌，让花苞在指尖绽放。<br>移动手掌，花会跟着你轻轻转动。</p>
+      <button class="start-btn" id="startBtn">开启摄像头</button>
+      <button class="skip-btn" id="skipBtn">先用鼠标体验</button>
+      <p class="welcome-note" id="welcomeNote">摄像头只在本机处理，不会上传。</p>
+    </div>
+  </div>
 
-        <div class="screen__display" id="display" aria-live="polite">0</div>
-
-        <div class="screen__bottomline">
-          <span class="screen__hint" id="hint" aria-live="polite">支持 + − × ÷ 与括号</span>
-        </div>
-      </div>
-
-      <div class="keypad" id="keypad" role="group" aria-label="计算器按键">
-        <button type="button" class="key key--utility key--clear" data-action="clear" aria-label="全部清除">AC</button>
-        <button type="button" class="key key--utility" data-action="paren" data-value="(" aria-label="左括号">(</button>
-        <button type="button" class="key key--utility" data-action="paren" data-value=")" aria-label="右括号">)</button>
-        <button type="button" class="key key--utility" data-action="backspace" aria-label="退格">
-          <svg class="key__icon" viewBox="0 0 24 24" aria-hidden="true">
-            <path d="M20 6H9.5L3.8 12l5.7 6H20a1 1 0 0 0 1-1V7a1 1 0 0 0-1-1Z"></path>
-            <path d="m12 9.5 5 5m0-5-5 5"></path>
-          </svg>
-        </button>
-
-        <button type="button" class="key key--number" data-action="digit" data-value="7">7</button>
-        <button type="button" class="key key--number" data-action="digit" data-value="8">8</button>
-        <button type="button" class="key key--number" data-action="digit" data-value="9">9</button>
-        <button type="button" class="key key--operator" data-action="operator" data-value="/" aria-label="除">÷</button>
-
-        <button type="button" class="key key--number" data-action="digit" data-value="4">4</button>
-        <button type="button" class="key key--number" data-action="digit" data-value="5">5</button>
-        <button type="button" class="key key--number" data-action="digit" data-value="6">6</button>
-        <button type="button" class="key key--operator" data-action="operator" data-value="*" aria-label="乘">×</button>
-
-        <button type="button" class="key key--number" data-action="digit" data-value="1">1</button>
-        <button type="button" class="key key--number" data-action="digit" data-value="2">2</button>
-        <button type="button" class="key key--number" data-action="digit" data-value="3">3</button>
-        <button type="button" class="key key--operator" data-action="operator" data-value="-" aria-label="减">−</button>
-
-        <button type="button" class="key key--utility key--sign" data-action="sign" aria-label="切换正负号">±</button>
-        <button type="button" class="key key--number" data-action="digit" data-value="0">0</button>
-        <button type="button" class="key key--number" data-action="decimal" aria-label="小数点">.</button>
-        <button type="button" class="key key--operator" data-action="operator" data-value="+" aria-label="加">+</button>
-
-        <button type="button" class="key key--equals" data-action="equals" aria-label="计算结果">
-          <span class="key--equals__sign">=</span>
-          <span class="key--equals__hint">计算</span>
-        </button>
-      </div>
-
-      <footer class="calculator__footer" aria-label="键盘快捷键">
-        <span class="shortcut"><kbd>Enter</kbd><span>计算</span></span>
-        <span class="shortcut"><kbd>Esc</kbd><span>清空</span></span>
-        <span class="shortcut"><kbd>⌫</kbd><span>退格</span></span>
-      </footer>
-    </section>
-
-    <p class="page__note">
-      <span class="page__pulse" aria-hidden="true"></span>
-      <strong>单文件网页</strong> · 无需服务器
-      <span class="page__divider" aria-hidden="true">/</span>
-      <span class="page__url" id="pageUrl">离线可用</span>
-    </p>
-  </main>
-
-  <noscript>
-    <div class="noscript">请启用 JavaScript 后使用这个计算器。</div>
-  </noscript>
-
-  <script>
-(() => {
-  "use strict";
-
-  const DEFAULT_HINT = "支持 + − × ÷ 与括号";
-  const RESULT_HINT = "按任意数字开始新的计算";
-  const MAX_EXPRESSION_LENGTH = 200;
-
-  const state = {
-    expression: "0",
-    justEvaluated: false,
-    history: "准备就绪",
-  };
-
-  const elements = {
-    screen: document.getElementById("screen"),
-    display: document.getElementById("display"),
-    history: document.getElementById("history"),
-    hint: document.getElementById("hint"),
-    keypad: document.getElementById("keypad"),
-    serviceStatus: document.getElementById("serviceStatus"),
-    statusText: document.getElementById("statusText"),
-    pageUrl: document.getElementById("pageUrl"),
-  };
-
-  if (!elements.keypad || !elements.display) {
-    return;
-  }
-
-  class CalcError extends Error {}
-
-  function normalizeExpression(expression) {
-    return String(expression)
-      .replace(/×/g, "*")
-      .replace(/÷/g, "/")
-      .replace(/−/g, "-")
-      .replace(/（/g, "(")
-      .replace(/）/g, ")");
-  }
-
-  function calculateValue(expression) {
-    const text = normalizeExpression(expression);
-    if (text.length > MAX_EXPRESSION_LENGTH) {
-      throw new CalcError("算式太长，请控制在 200 个字符以内");
-    }
-
-    let position = 0;
-
-    function skipSpace() {
-      while (position < text.length && /\s/.test(text[position])) {
-        position += 1;
+  <script type="importmap">
+    {
+      "imports": {
+        "three": "https://cdn.jsdelivr.net/npm/three@0.168.0/build/three.module.js",
+        "three/addons/": "https://cdn.jsdelivr.net/npm/three@0.168.0/examples/jsm/"
       }
     }
+  </script>
 
-    function parseNumber() {
-      const start = position;
-      let hasDigits = false;
+  <script type="module">
+    import * as THREE from 'three';
+    import { EffectComposer } from 'three/addons/postprocessing/EffectComposer.js';
+    import { RenderPass } from 'three/addons/postprocessing/RenderPass.js';
+    import { UnrealBloomPass } from 'three/addons/postprocessing/UnrealBloomPass.js';
+    import { OutputPass } from 'three/addons/postprocessing/OutputPass.js';
 
-      while (position < text.length && /[0-9]/.test(text[position])) {
-        hasDigits = true;
-        position += 1;
-      }
+    // -------------------------------------------------------------------------
+    // 基础设置
+    // -------------------------------------------------------------------------
+    const IS_MOBILE = matchMedia('(max-width: 700px)').matches;
+    const CORES = navigator.hardwareConcurrency || 4;
+    const MEMORY = navigator.deviceMemory || 8;
+    const LOW_END = IS_MOBILE || CORES <= 4 || MEMORY <= 4;
+    const PARTICLE_COUNT = LOW_END ? 16000 : 44000;
+    const PIXEL_RATIO = Math.min(devicePixelRatio || 1, IS_MOBILE ? 1.5 : 1.75);
 
-      if (text[position] === ".") {
-        position += 1;
-        while (position < text.length && /[0-9]/.test(text[position])) {
-          hasDigits = true;
-          position += 1;
-        }
-      }
-
-      if (!hasDigits) {
-        throw new CalcError("数字格式有误");
-      }
-
-      if (text[position] === "e" || text[position] === "E") {
-        const exponentStart = position;
-        position += 1;
-        if (text[position] === "+" || text[position] === "-") {
-          position += 1;
-        }
-        const digitStart = position;
-        while (position < text.length && /[0-9]/.test(text[position])) {
-          position += 1;
-        }
-        if (position === digitStart) {
-          position = exponentStart;
-          throw new CalcError("数字格式有误");
-        }
-      }
-
-      const token = text.slice(start, position);
-      const value = Number(token);
-      if (!Number.isFinite(value)) {
-        throw new CalcError("数字超出可计算范围");
-      }
-      return value;
-    }
-
-    function parsePrimary() {
-      skipSpace();
-      if (position >= text.length) {
-        throw new CalcError("算式不完整");
-      }
-
-      if (text[position] === "(") {
-        position += 1;
-        const value = parseExpression();
-        skipSpace();
-        if (position >= text.length || text[position] !== ")") {
-          throw new CalcError("括号不匹配");
-        }
-        position += 1;
-        return value;
-      }
-
-      if (text[position] === ")") {
-        throw new CalcError("括号不匹配");
-      }
-
-      if (/[0-9.]/.test(text[position])) {
-        return parseNumber();
-      }
-
-      throw new CalcError("算式中包含无法识别的字符");
-    }
-
-    function parseUnary() {
-      skipSpace();
-      if (position >= text.length) {
-        throw new CalcError("算式不完整");
-      }
-      if (text[position] === "+") {
-        position += 1;
-        return parseUnary();
-      }
-      if (text[position] === "-") {
-        position += 1;
-        return -parseUnary();
-      }
-      return parsePrimary();
-    }
-
-    function parseTerm() {
-      let value = parseUnary();
-      while (true) {
-        skipSpace();
-        if (position >= text.length) {
-          break;
-        }
-        if (text[position] === "*") {
-          position += 1;
-          value *= parseUnary();
-          if (!Number.isFinite(value)) {
-            throw new CalcError("结果超出可计算范围");
-          }
-        } else if (text[position] === "/") {
-          position += 1;
-          const divisor = parseUnary();
-          if (divisor === 0) {
-            throw new CalcError("不能除以 0");
-          }
-          value /= divisor;
-          if (!Number.isFinite(value)) {
-            throw new CalcError("结果超出可计算范围");
-          }
-        } else {
-          break;
-        }
-      }
-      return value;
-    }
-
-    function parseExpression() {
-      let value = parseTerm();
-      while (true) {
-        skipSpace();
-        if (position >= text.length) {
-          break;
-        }
-        if (text[position] === "+") {
-          position += 1;
-          value += parseTerm();
-          if (!Number.isFinite(value)) {
-            throw new CalcError("结果超出可计算范围");
-          }
-        } else if (text[position] === "-") {
-          position += 1;
-          value -= parseTerm();
-          if (!Number.isFinite(value)) {
-            throw new CalcError("结果超出可计算范围");
-          }
-        } else {
-          break;
-        }
-      }
-      return value;
-    }
-
-    skipSpace();
-    if (position >= text.length) {
-      throw new CalcError("请输入算式");
-    }
-
-    const result = parseExpression();
-    skipSpace();
-    if (position !== text.length) {
-      if (text[position] === ")") {
-        throw new CalcError("括号不匹配");
-      }
-      throw new CalcError("算式中包含无法识别的字符");
-    }
-    if (!Number.isFinite(result)) {
-      throw new CalcError("结果超出可计算范围");
-    }
-    return result;
-  }
-
-  function formatNumber(value) {
-    if (!Number.isFinite(value)) {
-      throw new CalcError("结果超出可计算范围");
-    }
-    if (value === 0 || Object.is(value, -0)) {
-      return "0";
-    }
-
-    const absoluteValue = Math.abs(value);
-    if (absoluteValue >= 1e12 || absoluteValue < 1e-9) {
-      let scientific = value.toExponential(11);
-      const [rawMantissa, rawExponent] = scientific.split("e");
-      let mantissa = rawMantissa;
-      if (mantissa.includes(".")) {
-        mantissa = mantissa.replace(/0+$/, "").replace(/\.$/, "");
-      }
-      const exponent = Number(rawExponent);
-      return mantissa + "e" + (exponent >= 0 ? "+" : "") + exponent;
-    }
-
-    let fixed = value.toFixed(12);
-    if (fixed.includes(".")) {
-      fixed = fixed.replace(/0+$/, "").replace(/\.$/, "");
-    }
-    return fixed === "-0" || fixed === "" ? "0" : fixed;
-  }
-
-  function calculate(expression) {
-    return formatNumber(calculateValue(expression));
-  }
-
-  function prettyExpression(expression) {
-    return String(expression)
-      .replace(/\*/g, "×")
-      .replace(/\//g, "÷")
-      .replace(/-/g, "−");
-  }
-
-  function groupInteger(integer) {
-    return integer.replace(/\B(?=(\d{3})+(?!\d))/g, ",");
-  }
-
-  function formatResult(rawValue) {
-    let value = String(rawValue);
-    let sign = "";
-
-    if (value.startsWith("-")) {
-      sign = "-";
-      value = value.slice(1);
-    }
-
-    const exponentIndex = value.search(/[eE]/);
-    let exponent = "";
-    if (exponentIndex !== -1) {
-      exponent = value.slice(exponentIndex);
-      value = value.slice(0, exponentIndex);
-    }
-
-    const dotIndex = value.indexOf(".");
-    let integer = dotIndex === -1 ? value : value.slice(0, dotIndex);
-    const fraction = dotIndex === -1 ? "" : value.slice(dotIndex);
-
-    if (integer === "") {
-      integer = "0";
-    }
-
-    return sign + groupInteger(integer) + fraction + exponent;
-  }
-
-  function render() {
-    const visible = state.justEvaluated
-      ? formatResult(state.expression)
-      : prettyExpression(state.expression || "0");
-
-    elements.display.textContent = visible;
-    elements.display.classList.toggle("is-long", visible.length > 12 && visible.length <= 19);
-    elements.display.classList.toggle("is-very-long", visible.length > 19);
-
-    elements.history.textContent = state.history;
-    elements.history.title = state.history;
-
-    window.requestAnimationFrame(() => {
-      elements.display.scrollLeft = elements.display.scrollWidth;
+    const canvas = document.getElementById('scene');
+    const renderer = new THREE.WebGLRenderer({
+      canvas,
+      antialias: true,
+      alpha: false,
+      powerPreference: 'high-performance'
     });
-  }
+    renderer.setPixelRatio(PIXEL_RATIO);
+    renderer.setSize(innerWidth, innerHeight);
+    renderer.outputColorSpace = THREE.SRGBColorSpace;
+    renderer.toneMapping = THREE.ACESFilmicToneMapping;
+    renderer.toneMappingExposure = 1.0;
+    renderer.setClearColor(0x19070b, 1);
 
-  function setHint(message, isError = false) {
-    elements.hint.textContent = message;
-    elements.hint.classList.toggle("is-error", isError);
-    if (!isError) {
-      elements.screen.classList.remove("is-error");
-    }
-  }
+    const scene = new THREE.Scene();
+    scene.background = new THREE.Color(0x19070b);
 
-  function clearFeedback() {
-    elements.screen.classList.remove("is-error", "is-shaking");
-    elements.hint.classList.remove("is-error");
-    setHint(state.justEvaluated ? RESULT_HINT : DEFAULT_HINT);
-  }
+    const camera = new THREE.PerspectiveCamera(42, innerWidth / innerHeight, 0.1, 80);
+    camera.position.set(0, 0.52, 6.2);
+    camera.lookAt(0, 0.08, 0);
 
-  let shakeTimer = 0;
+    const composer = new EffectComposer(renderer);
+    composer.setPixelRatio(PIXEL_RATIO);
+    composer.setSize(innerWidth, innerHeight);
+    composer.addPass(new RenderPass(scene, camera));
 
-  function showError(message) {
-    setHint(message, true);
-    elements.screen.classList.add("is-error");
-    elements.screen.classList.remove("is-shaking");
-    void elements.screen.offsetWidth;
-    elements.screen.classList.add("is-shaking");
+    // 柔和 bloom：阈值抬高，强度压低，避免整朵花过曝
+    const bloomPass = new UnrealBloomPass(
+      new THREE.Vector2(innerWidth, innerHeight),
+      0.34,
+      0.4,
+      0.3
+    );
+    composer.addPass(bloomPass);
+    composer.addPass(new OutputPass());
 
-    window.clearTimeout(shakeTimer);
-    shakeTimer = window.setTimeout(() => {
-      elements.screen.classList.remove("is-shaking");
-    }, 360);
-  }
+    // -------------------------------------------------------------------------
+    // 背景柔光（纯 shader，无图片）
+    // -------------------------------------------------------------------------
+    const backdropUniforms = {
+      uTime: { value: 0 },
+      uColor: { value: new THREE.Color(0x4a0c24) }
+    };
+    const backdrop = new THREE.Mesh(
+      new THREE.PlaneGeometry(12, 12),
+      new THREE.ShaderMaterial({
+        uniforms: backdropUniforms,
+        transparent: true,
+        depthWrite: false,
+        blending: THREE.AdditiveBlending,
+        vertexShader: `
+          varying vec2 vUv;
+          void main() {
+            vUv = uv;
+            gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0);
+          }
+        `,
+        fragmentShader: `
+          uniform vec3 uColor;
+          uniform float uTime;
+          varying vec2 vUv;
+          void main() {
+            vec2 p = vUv - 0.5;
+            float d = length(p * vec2(1.15, 1.0));
+            float glow = exp(-d * d * 12.0);
+            float breath = 0.9 + 0.1 * sin(uTime * 0.7);
+            gl_FragColor = vec4(uColor * glow * breath, glow * 0.34);
+          }
+        `
+      })
+    );
+    backdrop.position.set(0, 0, -2.4);
+    scene.add(backdrop);
 
-  function appendDigit(digit) {
-    if (state.justEvaluated) {
-      state.justEvaluated = false;
-      state.expression = "0";
-    }
+    // -------------------------------------------------------------------------
+    // 双位置粒子花
+    // 每个粒子只生成一次 aPosBud / aPosFull，之后完全由 GPU 插值。
+    // -------------------------------------------------------------------------
+    const flower = new THREE.Group();
+    scene.add(flower);
 
-    if (state.expression.endsWith(")")) {
-      state.expression += "*";
-    }
+    const budPositions = new Float32Array(PARTICLE_COUNT * 3);
+    const fullPositions = new Float32Array(PARTICLE_COUNT * 3);
+    const colors = new Float32Array(PARTICLE_COUNT * 3);
+    const delays = new Float32Array(PARTICLE_COUNT);
+    const sizes = new Float32Array(PARTICLE_COUNT);
+    const seeds = new Float32Array(PARTICLE_COUNT);
+    const edgeFactors = new Float32Array(PARTICLE_COUNT);
+    const outwardFactors = new Float32Array(PARTICLE_COUNT);
+    const rimFactors = new Float32Array(PARTICLE_COUNT);
+    const layerFactors = new Float32Array(PARTICLE_COUNT);
+    const coreFlags = new Float32Array(PARTICLE_COUNT);
 
-    if (!state.expression || state.expression === "0") {
-      state.expression = digit;
-    } else if (/(^|[+\-*/(])0$/.test(state.expression)) {
-      state.expression = state.expression.slice(0, -1) + digit;
-    } else {
-      state.expression += digit;
-    }
+    let seed = 8844221;
+    const rand = () => {
+      seed = (Math.imul(seed, 1664525) + 1013904223) >>> 0;
+      return seed / 4294967296;
+    };
+    const gaussian = () => {
+      const u1 = Math.max(1e-6, rand());
+      const u2 = rand();
+      return Math.sqrt(-2 * Math.log(u1)) * Math.cos(Math.PI * 2 * u2);
+    };
 
-    clearFeedback();
-    render();
-  }
+    const centerPalette = [
+      0xffc6d8, 0xffd5e2, 0xffb4ce, 0xffe0e8
+    ].map((hex) => new THREE.Color(hex).convertSRGBToLinear());
+    const edgePalette = [
+      0xb34b77, 0xc65c87, 0x9b3d72, 0xbb507c
+    ].map((hex) => new THREE.Color(hex).convertSRGBToLinear());
+    const corePalette = [
+      0xffd39a, 0xffb86e, 0xffe6c2, 0xffc780
+    ].map((hex) => new THREE.Color(hex).convertSRGBToLinear());
+    const dustPalette = [
+      0xd97aa6, 0x9d63c9, 0xe78bab
+    ].map((hex) => new THREE.Color(hex).convertSRGBToLinear());
 
-  function appendDecimal() {
-    if (state.justEvaluated) {
-      state.justEvaluated = false;
-      state.expression = "0";
-    }
+    // 三层花瓣：外层最大最深，内层最小最亮
+    const petalLayers = [
+      { base: 0.32, length: 1.1, width: 0.46, cup: 0.28, z: -0.24, angle: 0, delay: 0, colorShift: 0.24, radiusScale: 1.0, sizeScale: 0.92 },
+      { base: 0.24, length: 0.9, width: 0.4, cup: 0.22, z: 0.0, angle: Math.PI / 6, delay: 0.08, colorShift: 0.11, radiusScale: 0.82, sizeScale: 1.06 },
+      { base: 0.17, length: 0.66, width: 0.34, cup: 0.16, z: 0.16, angle: Math.PI / 12, delay: 0.16, colorShift: 0, radiusScale: 0.66, sizeScale: 1.2 }
+    ];
 
-    if (state.expression.endsWith(")")) {
-      state.expression += "*";
-    }
+    for (let i = 0; i < PARTICLE_COUNT; i++) {
+      const i3 = i * 3;
+      const typeRoll = rand();
+      const isCore = typeRoll < 0.05;
+      const isDust = typeRoll > 0.96;
+      const isPetal = !isCore && !isDust;
 
-    if (!state.expression || /[+\-*/(]$/.test(state.expression)) {
-      state.expression += "0.";
-    } else {
-      const tail = state.expression.match(/(\d+(?:\.\d*)?|\.\d+)$/);
-      if (tail && tail[0].includes(".")) {
-        return;
-      }
-      state.expression += ".";
-    }
+      let bx = 0;
+      let by = 0;
+      let bz = 0;
+      let fx = 0;
+      let fy = 0;
+      let fz = 0;
+      let delay = 0;
+      let size = 0.02;
+      let edgeFactor = 0;
+      let outwardFactor = 0;
+      let rimFactor = 0;
+      let layerFactor = 0;
+      let coreFlag = 0;
+      const color = new THREE.Color();
 
-    clearFeedback();
-    render();
-  }
+      if (isPetal) {
+        const centerColor = centerPalette[Math.floor(rand() * centerPalette.length)];
+        const edgeColor = edgePalette[Math.floor(rand() * edgePalette.length)];
+        const petal = Math.floor(rand() * 6);
+        const layerRoll = rand();
+        const layer = layerRoll < 0.42 ? 0 : layerRoll < 0.76 ? 1 : 2;
+        layerFactor = layer;
+        const cfg = petalLayers[layer];
+        // 三层保持相同六个方向，形成可辨认的重瓣轮廓；只做极轻微错位
+        const theta = petal * (Math.PI * 2 / 6) + cfg.angle
+          + (rand() - 0.5) * 0.035;
 
-  function appendOperator(operator) {
-    if (state.justEvaluated) {
-      state.justEvaluated = false;
-    }
+        const profile = rand();
+        let u;
+        if (profile < 0.32) {
+          u = (rand() < 0.5 ? -1 : 1) * (0.9 + rand() * 0.1);
+        } else if (profile < 0.62) {
+          const vein = Math.floor(rand() * 5) - 2;
+          u = vein / 2.5 + (rand() - 0.5) * 0.07;
+        } else {
+          u = (rand() * 2 - 1) * 0.92;
+        }
 
-    if (!state.expression) {
-      state.expression = "0";
-    }
+        // 真实花瓣：基部收窄，中段变宽，瓣尖略圆，表面带一点杯状弧度
+        const s = 0.03 + rand() * 0.95;
+        const lengthVar = 0.93 + rand() * 0.14;
+        const widthProfile = Math.pow(Math.sin(Math.PI * Math.pow(s, 0.72)), 0.56)
+          + 0.05 * Math.pow(s, 8);
+        const halfWidth = cfg.width * widthProfile * (0.72 + 0.28 * s);
+        const radius = cfg.base + cfg.length * lengthVar * s;
+        const cup = cfg.cup * Math.sin(Math.PI * s) * (1 - u * u);
+        const dirX = Math.cos(theta);
+        const dirY = Math.sin(theta);
+        const tanX = -Math.sin(theta);
+        const tanY = Math.cos(theta);
+        fx = dirX * radius + tanX * u * halfWidth;
+        fy = dirY * radius + tanY * u * halfWidth;
+        fz = cfg.z + cup + (rand() - 0.5) * 0.022;
 
-    if (state.expression === "-" && operator !== "-") {
-      return;
-    }
+        edgeFactor = Math.abs(u);
+        // 瓣缘有细光边，但不是放射状硬线
+        if (edgeFactor > 0.88) {
+          rimFactor = 1;
+        }
 
-    const last = state.expression.slice(-1);
-    if (last === "(") {
-      if (operator === "-") {
-        state.expression += "-";
-      }
-    } else if (/[+\-*/]/.test(last)) {
-      state.expression = state.expression.slice(0, -1) + operator;
-    } else if (last === ".") {
-      state.expression += "0" + operator;
-    } else {
-      state.expression += operator;
-    }
+        const outward = THREE.MathUtils.clamp((radius - 0.1) / 1.45, 0, 1);
+        outwardFactor = outward;
+        const sideShade = Math.pow(Math.abs(u), 0.75) * 0.24;
+        const shade = THREE.MathUtils.clamp(
+          Math.max(
+            Math.pow(edgeFactor, 0.75) * 0.5,
+            Math.pow(outward, 0.78) * 0.68
+          ) + sideShade + cfg.colorShift,
+          0,
+          1
+        );
+        color.copy(centerColor).lerp(edgeColor, shade);
 
-    clearFeedback();
-    render();
-  }
+        // 花苞：三层花瓣螺旋包裹，外层大、内层小
+        const budT = 0.03 + rand() * 0.94;
+        let budAngle = petal * (Math.PI * 2 / 6) + cfg.angle * 0.55
+          + (1 - budT) * 1.4 + u * 0.38 + (rand() - 0.5) * 0.04;
+        let budRadius = 0.5 * Math.pow(Math.sin(Math.PI * budT), 0.62)
+          * (0.82 + rand() * 0.12) * cfg.radiusScale;
+        budRadius += Math.abs(u) * Math.sin(Math.PI * budT) * 0.045;
+        by += layer * 0.028;
+        budAngle += Math.sin(budT * Math.PI * 1.5) * 0.045;
+        if (budT > 0.9) by += (budT - 0.9) * 0.12;
+        bx = Math.cos(budAngle) * budRadius;
+        bz = Math.sin(budAngle) * budRadius;
+        by += -1.05 + 2.0 * budT;
 
-  function appendParen(paren) {
-    if (paren === "(") {
-      if (state.justEvaluated) {
-        state.expression = "";
-        state.justEvaluated = false;
-      }
+        color.lerp(edgeColor, budT * 0.16 + layer * 0.03);
+        outwardFactor = Math.max(outwardFactor, budT * 0.3);
+        delay = 0.02 + cfg.delay + (1 - budT) * 0.42 + petal * 0.025 + rand() * 0.05;
+        size = (0.009 + rand() * 0.019) * cfg.sizeScale;
+        if (edgeFactor < 0.3) size += 0.0025;
+      } else if (isCore) {
+        // 花蕊：花苞阶段隐藏，盛开后才显现金色
+        coreFlag = 1;
+        const br = 0.18 * Math.cbrt(rand());
+        const ba = rand() * Math.PI * 2;
+        const bp = Math.acos(rand() * 2 - 1);
+        bx = Math.sin(bp) * Math.cos(ba) * br;
+        by = Math.cos(bp) * br * 0.75;
+        bz = Math.sin(bp) * Math.sin(ba) * br;
 
-      if (!state.expression || state.expression === "0") {
-        state.expression = "(";
+        const fr = 0.24 * Math.cbrt(rand());
+        const fa = rand() * Math.PI * 2;
+        const fp = Math.acos(rand() * 2 - 1);
+        fx = Math.sin(fp) * Math.cos(fa) * fr;
+        fy = Math.cos(fp) * fr * 0.52 + 0.02;
+        fz = Math.sin(fp) * Math.sin(fa) * fr;
+
+        color.copy(corePalette[Math.floor(rand() * corePalette.length)]);
+        delay = 0.01 + rand() * 0.06;
+        size = 0.011 + rand() * 0.012;
       } else {
-        if (state.expression.endsWith(".")) {
-          state.expression += "0";
+        // 稀疏花粉
+        const h = rand() * 2 - 1;
+        const r = 0.82 + rand() * 0.38;
+        const a = rand() * Math.PI * 2;
+        bx = Math.cos(a) * r * Math.sqrt(Math.max(0, 1 - h * h));
+        by = h * 1.08;
+        bz = Math.sin(a) * r * Math.sqrt(Math.max(0, 1 - h * h));
+
+        const fa = rand() * Math.PI * 2;
+        const fr = 1.55 + rand() * 0.85;
+        const fh = rand() * 2 - 1;
+        fx = Math.cos(fa) * fr * Math.sqrt(Math.max(0, 1 - fh * fh));
+        fy = fh * fr * 0.7 + 0.08;
+        fz = Math.sin(fa) * fr * Math.sqrt(Math.max(0, 1 - fh * fh));
+
+        color.copy(dustPalette[Math.floor(rand() * dustPalette.length)]);
+        edgeFactor = 0.25;
+        outwardFactor = 1.0;
+        delay = 0.25 + rand() * 0.45;
+        size = 0.008 + rand() * 0.013;
+      }
+
+      budPositions[i3] = bx;
+      budPositions[i3 + 1] = by;
+      budPositions[i3 + 2] = bz;
+      fullPositions[i3] = fx;
+      fullPositions[i3 + 1] = fy;
+      fullPositions[i3 + 2] = fz;
+
+      colors[i3] = color.r;
+      colors[i3 + 1] = color.g;
+      colors[i3 + 2] = color.b;
+      delays[i] = delay;
+      sizes[i] = size;
+      seeds[i] = rand();
+      edgeFactors[i] = edgeFactor;
+      outwardFactors[i] = outwardFactor;
+      rimFactors[i] = rimFactor;
+      layerFactors[i] = layerFactor;
+      coreFlags[i] = coreFlag;
+    }
+
+    const particleGeometry = new THREE.BufferGeometry();
+    particleGeometry.setAttribute('position', new THREE.BufferAttribute(budPositions.slice(), 3));
+    particleGeometry.setAttribute('aPosBud', new THREE.BufferAttribute(budPositions, 3));
+    particleGeometry.setAttribute('aPosFull', new THREE.BufferAttribute(fullPositions, 3));
+    particleGeometry.setAttribute('aColor', new THREE.BufferAttribute(colors, 3));
+    particleGeometry.setAttribute('aDelay', new THREE.BufferAttribute(delays, 1));
+    particleGeometry.setAttribute('aSize', new THREE.BufferAttribute(sizes, 1));
+    particleGeometry.setAttribute('aSeed', new THREE.BufferAttribute(seeds, 1));
+    particleGeometry.setAttribute('aEdge', new THREE.BufferAttribute(edgeFactors, 1));
+    particleGeometry.setAttribute('aOutward', new THREE.BufferAttribute(outwardFactors, 1));
+    particleGeometry.setAttribute('aRim', new THREE.BufferAttribute(rimFactors, 1));
+    particleGeometry.setAttribute('aLayer', new THREE.BufferAttribute(layerFactors, 1));
+    particleGeometry.setAttribute('aCore', new THREE.BufferAttribute(coreFlags, 1));
+    particleGeometry.computeBoundingSphere();
+
+    const particleUniforms = {
+      uBloom: { value: 0.04 },
+      uTime: { value: 0 },
+      uPixelRatio: { value: PIXEL_RATIO },
+      uHand: { value: new THREE.Vector2(0, 0) },
+      uHandAmount: { value: 0 },
+      uPointer: { value: new THREE.Vector3(0, 0, 0) },
+      uPointerActive: { value: 0 }
+    };
+
+    const particleMaterial = new THREE.ShaderMaterial({
+      uniforms: particleUniforms,
+      transparent: true,
+      depthWrite: false,
+      depthTest: true,
+      blending: THREE.AdditiveBlending,
+      vertexShader: `
+        uniform float uBloom;
+        uniform float uTime;
+        uniform float uPixelRatio;
+        uniform vec2 uHand;
+        uniform float uHandAmount;
+        uniform vec3 uPointer;
+        uniform float uPointerActive;
+
+        attribute vec3 aPosBud;
+        attribute vec3 aPosFull;
+        attribute vec3 aColor;
+        attribute float aDelay;
+        attribute float aSize;
+        attribute float aSeed;
+        attribute float aEdge;
+        attribute float aOutward;
+        attribute float aRim;
+        attribute float aLayer;
+        attribute float aCore;
+
+        varying vec3 vColor;
+        varying float vAlpha;
+
+        void main() {
+          // 分批开花：aDelay 越大的粒子越晚启动
+          float delay = aDelay * 0.82;
+          float local = clamp((uBloom - delay) / max(0.001, 0.96 - delay), 0.0, 1.0);
+          local = local * local * (3.0 - 2.0 * local);
+          float eased = 1.0 - pow(1.0 - local, 3.0);
+
+          vec3 pos = mix(aPosBud, aPosFull, eased);
+
+          // 微弱漂浮与回旋
+          float drift = mix(0.018, 0.085, eased);
+          pos.x += sin(uTime * 0.55 + aSeed * 31.4 + pos.y * 1.8) * drift;
+          pos.y += cos(uTime * 0.43 + aSeed * 17.1 + pos.x * 2.0) * drift * 0.7;
+          pos.z += sin(uTime * 0.37 + aSeed * 23.7 + pos.y * 2.4) * drift * 0.8;
+
+          // 手掌位置牵引：只改 shader 内位移，不碰 CPU 粒子位置
+          float handPull = uHandAmount * (0.035 + eased * 0.075);
+          pos.x += uHand.x * handPull;
+          pos.y += uHand.y * handPull * 0.72;
+          pos.z += uHand.x * uHandAmount * 0.035;
+          pos.x += sin(uTime * 1.7 + aSeed * 10.0) * 0.008 * uHandAmount;
+
+          // 呼吸式膨胀
+          pos *= 1.0 + eased * 0.025 * sin(uTime * 1.1 + aSeed * 6.283);
+
+          // 掌心光点触碰：距离越近越亮，和开花程度无关
+          float pointerDist = distance(pos, uPointer);
+          float touch = smoothstep(0.46, 0.02, pointerDist) * uPointerActive;
+
+          // 粒子被光点轻轻推开，并产生一圈细微涟漪
+          if (pointerDist > 0.001) {
+            vec3 away = (pos - uPointer) / pointerDist;
+            float ripple = 0.5 + 0.5 * sin(pointerDist * 22.0 - uTime * 4.0);
+            pos += away * touch * (0.09 + ripple * 0.04);
+          }
+
+          // 翻瓣时带一点回旋，不是纯直线插值
+          float petalAngle = atan(aPosBud.z, aPosBud.x);
+          float curl = sin(3.14159265 * local) * 0.11;
+          pos.x += sin(petalAngle) * curl * (0.25 + 0.75 * eased);
+          pos.z += cos(petalAngle) * curl * (0.25 + 0.75 * eased);
+          pos.y += sin(3.14159265 * local) * 0.025 * sin(aSeed * 17.0);
+
+          vec4 mvPosition = modelViewMatrix * vec4(pos, 1.0);
+          gl_Position = projectionMatrix * mvPosition;
+
+          float pulse = 0.9 + 0.1 * sin(uTime * 1.35 + aSeed * 12.0);
+          float pointSize = aSize * (900.0 / max(1.0, -mvPosition.z)) * uPixelRatio;
+          gl_PointSize = clamp(pointSize * pulse * (1.0 + touch * 0.42), 1.0, 34.0);
+
+          // 花苞阶段隐藏金色花蕊，盛开后才慢慢亮起
+          float coreReveal = mix(1.0, smoothstep(0.1, 0.55, uBloom), aCore);
+          vColor = aColor * mix(0.28, 1.0, coreReveal);
+          // 每层不同的光量：外暗、内亮，形成同心层次
+          float layerLight = mix(0.82, 1.08, aLayer * 0.5);
+          vColor *= layerLight;
+          // 瓣缘描边：让三层花瓣的轮廓有可见的光边
+          vColor = mix(vColor, vec3(1.0, 0.83, 0.9), aRim * 0.65);
+          vColor = mix(vColor, vec3(1.0, 0.76, 0.85), touch * 0.23);
+
+          float edgeFade = (1.0 - aEdge * 0.18) * (1.0 + aRim * 0.45);
+          float outwardFade = mix(1.0, 0.42, aOutward);
+          vAlpha = mix(0.56, 1.0, eased) * (0.82 + 0.18 * sin(uTime * 1.2 + aSeed * 9.0));
+          vAlpha *= edgeFade * outwardFade * mix(0.3, 1.0, coreReveal);
+          vAlpha *= mix(0.82, 1.02, aLayer * 0.5);
+          vAlpha *= 1.0 + touch * 0.5;
         }
-        const last = state.expression.slice(-1);
-        if (last === ")" || /\d/.test(last)) {
-          state.expression += "*";
+      `,
+      fragmentShader: `
+        varying vec3 vColor;
+        varying float vAlpha;
+
+        void main() {
+          vec2 p = gl_PointCoord - 0.5;
+          float d = length(p) * 2.0;
+          if (d > 1.0) discard;
+
+          float core = pow(1.0 - d, 2.6);
+          float halo = pow(1.0 - d, 1.0) * 0.32;
+          float alpha = (core + halo) * vAlpha;
+          if (alpha < 0.008) discard;
+
+          gl_FragColor = vec4(vColor * (1.0 + core * 0.6), alpha);
         }
-        state.expression += "(";
+      `
+    });
+
+    const flowerPoints = new THREE.Points(particleGeometry, particleMaterial);
+    flower.add(flowerPoints);
+
+    // 三层半透明花瓣面：给粒子云一个真实的瓣形底，避免只剩一团光雾
+    const petalMeshes = [];
+    const petalMeshMaterial = new THREE.ShaderMaterial({
+      uniforms: { uOpacity: { value: 0 } },
+      vertexShader: `
+        attribute vec3 aColor;
+        attribute float aAlpha;
+        varying vec3 vColor;
+        varying float vAlpha;
+        void main() {
+          vColor = aColor;
+          vAlpha = aAlpha;
+          gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0);
+        }
+      `,
+      fragmentShader: `
+        uniform float uOpacity;
+        varying vec3 vColor;
+        varying float vAlpha;
+        void main() {
+          gl_FragColor = vec4(vColor, vAlpha * uOpacity);
+        }
+      `,
+      transparent: true,
+      blending: THREE.AdditiveBlending,
+      depthWrite: false,
+      side: THREE.DoubleSide,
+      toneMapped: false
+    });
+
+    for (let layer = 0; layer < petalLayers.length; layer++) {
+      const cfg = petalLayers[layer];
+      const centerColor = centerPalette[layer % centerPalette.length];
+      const edgeColor = edgePalette[layer % edgePalette.length];
+      for (let petal = 0; petal < 6; petal++) {
+        const theta = petal * (Math.PI * 2 / 6) + cfg.angle;
+        const dirX = Math.cos(theta);
+        const dirY = Math.sin(theta);
+        const tanX = -Math.sin(theta);
+        const tanY = Math.cos(theta);
+        const rows = 16;
+        const cols = 12;
+        const positions = [];
+        const colors = [];
+        const alphas = [];
+        const indices = [];
+        for (let i = 0; i <= rows; i++) {
+          const s = i / rows;
+          const widthProfile = Math.pow(Math.sin(Math.PI * Math.pow(s, 0.72)), 0.56)
+            + 0.05 * Math.pow(s, 8);
+          const halfWidth = cfg.width * widthProfile * (0.72 + 0.28 * s);
+          const radius = cfg.base + cfg.length * s;
+          for (let j = 0; j <= cols; j++) {
+            const u = j / cols * 2 - 1;
+            const cup = cfg.cup * Math.sin(Math.PI * s) * (1 - u * u);
+            positions.push(
+              dirX * radius + tanX * u * halfWidth,
+              dirY * radius + tanY * u * halfWidth,
+              cfg.z + cup
+            );
+            const absU = Math.abs(u);
+            const shade = Math.max(absU * 0.62, Math.pow(s, 1.2) * 0.3);
+            const col = centerColor.clone().lerp(edgeColor, shade);
+            colors.push(col.r, col.g, col.b);
+            alphas.push((1 - Math.pow(absU, 2.4)) * (0.55 + 0.45 * Math.sin(Math.PI * s)));
+          }
+        }
+        for (let i = 0; i < rows; i++) {
+          for (let j = 0; j < cols; j++) {
+            const a = i * (cols + 1) + j;
+            const b = a + 1;
+            const c = a + cols + 1;
+            const d = c + 1;
+            indices.push(a, b, c, b, d, c);
+          }
+        }
+        const geo = new THREE.BufferGeometry();
+        geo.setAttribute('position', new THREE.Float32BufferAttribute(positions, 3));
+        geo.setAttribute('aColor', new THREE.Float32BufferAttribute(colors, 3));
+        geo.setAttribute('aAlpha', new THREE.Float32BufferAttribute(alphas, 1));
+        geo.setIndex(indices);
+        const mesh = new THREE.Mesh(geo, petalMeshMaterial.clone());
+        mesh.renderOrder = 2;
+        mesh.visible = false;
+        // 花瓣面先不叠加：避免平面色块把粒子层次盖住
+        petalMeshes.push(mesh);
+      }
+    }
+
+    // 掌心光点：Canvas 生成的柔光，不依赖图片资源
+    const pointerCanvas = document.createElement('canvas');
+    pointerCanvas.width = pointerCanvas.height = 128;
+    const pointerCtx = pointerCanvas.getContext('2d');
+    const pointerGradient = pointerCtx.createRadialGradient(64, 64, 0, 64, 64, 64);
+    pointerGradient.addColorStop(0, 'rgba(255, 255, 255, 1)');
+    pointerGradient.addColorStop(0.16, 'rgba(255, 225, 238, 0.95)');
+    pointerGradient.addColorStop(0.48, 'rgba(255, 145, 190, 0.42)');
+    pointerGradient.addColorStop(1, 'rgba(255, 105, 170, 0)');
+    pointerCtx.fillStyle = pointerGradient;
+    pointerCtx.fillRect(0, 0, 128, 128);
+    const pointerTexture = new THREE.CanvasTexture(pointerCanvas);
+    pointerTexture.colorSpace = THREE.SRGBColorSpace;
+
+    const pointerSprite = new THREE.Sprite(new THREE.SpriteMaterial({
+      map: pointerTexture,
+      color: 0xffd4e3,
+      transparent: true,
+      opacity: 0,
+      blending: THREE.AdditiveBlending,
+      depthTest: false,
+      depthWrite: false,
+      toneMapped: false
+    }));
+    pointerSprite.scale.set(0.18, 0.18, 1);
+    pointerSprite.renderOrder = 8;
+    pointerSprite.visible = false;
+    scene.add(pointerSprite);
+
+    // 中心花蕊的圆形柔光，让核心更像一颗光球而不是一条亮带
+    const centerGlow = new THREE.Sprite(new THREE.SpriteMaterial({
+      map: pointerTexture,
+      color: 0xffd39a,
+      transparent: true,
+      opacity: 0,
+      blending: THREE.AdditiveBlending,
+      depthTest: false,
+      depthWrite: false,
+      toneMapped: false
+    }));
+    centerGlow.position.set(0, 0.02, 0);
+    centerGlow.scale.setScalar(0.42);
+    centerGlow.renderOrder = 7;
+    centerGlow.visible = false;
+    scene.add(centerGlow);
+
+    // -------------------------------------------------------------------------
+    // 状态与交互
+    // -------------------------------------------------------------------------
+    let mode = 'idle';               // idle | loading | camera | mouse
+    let cameraSession = 0;
+    let bloomValue = 0.04;
+    let bloomTarget = 0.04;
+    let manualTarget = 0.04;
+
+    let handLandmarker = null;
+    let cameraStream = null;
+    let tracking = false;
+    let handPresent = false;
+    let lastHandAt = 0;
+    let handSmooth = 0;
+    let handOpenState = false;
+    let handTarget = 0.04;
+    let handX = 0;
+    let handY = 0;
+    let handXTarget = 0;
+    let handYTarget = 0;
+    let handAmount = 0;
+    let handAmountTarget = 0;
+    let pointerTarget = new THREE.Vector3(0, 0, 0);
+    let pointerPosition = new THREE.Vector3(0, 0, 0);
+    let pointerAmount = 0;
+    let pointerAmountTarget = 0;
+    let lastVideoTime = -1;
+    let lastDetectAt = 0;
+
+    function pointerFromScreen(sx, sy) {
+      const ndc = new THREE.Vector3(sx * 2 - 1, -(sy * 2 - 1), 0.5).unproject(camera);
+      const dir = ndc.sub(camera.position).normalize();
+      const t = -camera.position.z / dir.z;
+      pointerTarget.copy(camera.position).addScaledVector(dir, t);
+    }
+
+    const statusText = document.getElementById('statusText');
+    const modeBadge = document.getElementById('modeBadge');
+    const cameraPanel = document.getElementById('cameraPanel');
+    const cameraVideo = document.getElementById('cameraVideo');
+    const handCanvas = document.getElementById('handCanvas');
+    const handCtx = handCanvas.getContext('2d');
+    const trackState = document.getElementById('trackState');
+    const welcome = document.getElementById('welcome');
+    const welcomeNote = document.getElementById('welcomeNote');
+    const startBtn = document.getElementById('startBtn');
+    const skipBtn = document.getElementById('skipBtn');
+    const bloomSlider = document.getElementById('bloomSlider');
+    const bloomOutput = document.getElementById('bloomOutput');
+
+    if (location.protocol === 'file:') {
+      welcomeNote.textContent = '点击后请在浏览器弹窗中允许摄像头；首次加载手部模型需要等待一会儿。';
+    }
+
+    const HAND_CONNECTIONS = [
+      [0, 1], [1, 2], [2, 3], [3, 4],
+      [0, 5], [5, 6], [6, 7], [7, 8],
+      [0, 9], [9, 10], [10, 11], [11, 12],
+      [0, 13], [13, 14], [14, 15], [15, 16],
+      [0, 17], [17, 18], [18, 19], [19, 20],
+      [5, 9], [9, 13], [13, 17]
+    ];
+
+    function setModeBadge(text, live) {
+      modeBadge.textContent = text;
+      modeBadge.classList.toggle('live', Boolean(live));
+    }
+
+    function setStatus(text, muted = false) {
+      statusText.textContent = text;
+      statusText.classList.toggle('muted', muted);
+    }
+
+    function withTimeout(promise, ms, label) {
+      return Promise.race([
+        promise,
+        new Promise((_, reject) => {
+          setTimeout(() => reject(new Error(`${label} 超时`)), ms);
+        })
+      ]);
+    }
+
+    function setBloomUI(value) {
+      const percent = Math.round(value * 100);
+      bloomOutput.textContent = `${percent}%`;
+      bloomSlider.value = value.toFixed(3);
+    }
+
+    // 滑块始终可用，作为调试 / 鼠标模式输入
+    bloomSlider.addEventListener('input', () => {
+      manualTarget = parseFloat(bloomSlider.value);
+      handTarget = manualTarget;
+      bloomTarget = manualTarget;
+      lastHandAt = 0;
+      setStatus(
+        mode === 'camera'
+          ? '滑块调试模式 · 手势会接管绽放'
+          : '鼠标模式 · 拖动滑块或横向拖拽',
+        false
+      );
+      setBloomUI(manualTarget);
+    });
+
+    function enterMouseMode(reason = '') {
+      cameraSession++;
+      tracking = false;
+      handPresent = false;
+      if (cameraStream) {
+        cameraStream.getTracks().forEach((track) => track.stop());
+        cameraStream = null;
+      }
+      cameraVideo.srcObject = null;
+      cameraPanel.classList.add('is-hidden');
+      handCtx.clearRect(0, 0, handCanvas.width, handCanvas.height);
+      mode = 'mouse';
+      handAmountTarget = 0;
+      handXTarget = 0;
+      handYTarget = 0;
+      pointerAmountTarget = 0;
+      document.body.classList.add('mouse-mode');
+      setModeBadge('MOUSE', false);
+      bloomTarget = Math.max(0.08, bloomValue);
+      manualTarget = bloomTarget;
+      setBloomUI(manualTarget);
+      setStatus('鼠标模式 · 按住画面并左右拖拽', false);
+      welcome.classList.add('is-gone');
+      if (reason) welcomeNote.textContent = reason;
+    }
+
+    async function startCamera() {
+      if (mode === 'loading' || mode === 'camera') return;
+      const session = ++cameraSession;
+      mode = 'loading';
+      startBtn.disabled = true;
+      setModeBadge('CONNECTING', false);
+      setStatus('正在请求摄像头权限…', true);
+      welcomeNote.textContent = '等待摄像头权限…';
+
+      try {
+        if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
+          throw new Error('当前浏览器不支持摄像头');
+        }
+
+        cameraStream = await withTimeout(
+          navigator.mediaDevices.getUserMedia({
+            audio: false,
+            video: {
+              facingMode: 'user',
+              width: { ideal: 640 },
+              height: { ideal: 480 }
+            }
+          }),
+          12000,
+          '摄像头权限'
+        );
+
+        if (session !== cameraSession) {
+          cameraStream?.getTracks().forEach((track) => track.stop());
+          cameraStream = null;
+          return;
+        }
+
+        cameraVideo.srcObject = cameraStream;
+        await cameraVideo.play();
+        if (session !== cameraSession) return;
+        cameraPanel.classList.remove('is-hidden');
+        setStatus('正在加载手部模型…', true);
+
+        // 动态加载 MediaPipe：失败时可以可靠地降级到鼠标模式
+        const visionModule = await import(
+          'https://cdn.jsdelivr.net/npm/@mediapipe/tasks-vision@0.10.14/vision_bundle.mjs'
+        );
+        const vision = await visionModule.FilesetResolver.forVisionTasks(
+          'https://cdn.jsdelivr.net/npm/@mediapipe/tasks-vision@0.10.14/wasm'
+        );
+        handLandmarker = await withTimeout(
+          visionModule.HandLandmarker.createFromOptions(vision, {
+            baseOptions: {
+              modelAssetPath:
+                'https://storage.googleapis.com/mediapipe-models/hand_landmarker/hand_landmarker/float16/1/hand_landmarker.task'
+            },
+            runningMode: 'VIDEO',
+            numHands: 1,
+            minHandDetectionConfidence: 0.5,
+            minHandPresenceConfidence: 0.5,
+            minTrackingConfidence: 0.5
+          }),
+          90000,
+          '手部模型加载'
+        );
+
+        if (session !== cameraSession) {
+          cameraStream?.getTracks().forEach((track) => track.stop());
+          cameraStream = null;
+          cameraPanel.classList.add('is-hidden');
+          return;
+        }
+
+        mode = 'camera';
+        tracking = true;
+        handPresent = false;
+        handSmooth = 0;
+        handOpenState = false;
+        handTarget = 0.04;
+        lastHandAt = performance.now();
+        setModeBadge('CAMERA', true);
+        setStatus('手掌张开 = 绽放 · 握拳 = 收拢 · 移动手掌 = 牵引', false);
+        welcome.classList.add('is-gone');
+        requestAnimationFrame(detectLoop);
+      } catch (error) {
+        if (session !== cameraSession) return;
+        console.warn('[Fingertip Bloom] 摄像头/MediaPipe 不可用:', error);
+        enterMouseMode('摄像头或手部模型不可用，已切换到鼠标模式。');
+      }
+    }
+
+    function detectLoop(now) {
+      if (!tracking) return;
+
+      if (cameraVideo.readyState >= 2 && handLandmarker) {
+        const videoTime = cameraVideo.currentTime;
+        if (videoTime !== lastVideoTime) {
+          lastVideoTime = videoTime;
+          const dt = Math.min(0.05, Math.max(0.001, (now - lastDetectAt) / 1000));
+          lastDetectAt = now;
+          try {
+            const result = handLandmarker.detectForVideo(cameraVideo, now);
+            if (result.landmarks && result.landmarks.length > 0) {
+              const lm = result.landmarks[0];
+              handPresent = true;
+              lastHandAt = now;
+
+              // 张开度：食指指尖(8) 到掌心(0) 的距离。
+              // 用同手 0-9 距离做尺度归一化，避免手掌大小/镜头远近导致误判。
+              const tip = lm[8];
+              const palm = lm[0];
+              const midMcp = lm[9];
+
+              // 掌心中心（0/5/9/13/17）比指尖稳定，握拳时也能保留光点
+              const palmIds = [0, 5, 9, 13, 17];
+              let palmX = 0;
+              let palmY = 0;
+              for (const id of palmIds) {
+                palmX += lm[id].x;
+                palmY += lm[id].y;
+              }
+              palmX /= palmIds.length;
+              palmY /= palmIds.length;
+
+              // 手掌位置驱动花的倾斜和位移；镜像到屏幕方向
+              handXTarget = THREE.MathUtils.clamp((0.5 - palmX) * 2, -1, 1);
+              handYTarget = THREE.MathUtils.clamp((0.5 - palmY) * 2, -1, 1);
+              handAmountTarget = 1;
+
+              // 掌心光点映射到花所在的 3D 平面
+              pointerFromScreen(1 - palmX, palmY);
+              pointerAmountTarget = 1;
+              const d = Math.hypot(tip.x - palm.x, tip.y - palm.y);
+              const span = Math.max(0.025, Math.hypot(midMcp.x - palm.x, midMcp.y - palm.y));
+              const ratio = d / span;
+              const rawOpen = THREE.MathUtils.smoothstep(ratio, 0.9, 1.8);
+
+              // EMA 指数平滑
+              handSmooth += (rawOpen - handSmooth) * (1 - Math.exp(-dt * 11));
+
+              // 双阈值迟滞，抑制抖动
+              if (!handOpenState && handSmooth > 0.62) handOpenState = true;
+              else if (handOpenState && handSmooth < 0.37) handOpenState = false;
+              handTarget = handOpenState ? 0.98 : 0.04;
+
+              drawHand(lm);
+              trackState.textContent = handOpenState ? 'OPEN' : 'FIST';
+            } else {
+              handPresent = false;
+              drawHand(null);
+              trackState.textContent = 'NO HAND';
+            }
+          } catch (error) {
+            // 单帧检测异常不切换模式，避免摄像头偶发丢帧导致闪断
+          }
+        }
       }
 
-      clearFeedback();
-      render();
-      return;
+      requestAnimationFrame(detectLoop);
     }
 
-    if (state.justEvaluated) {
-      return;
-    }
+    function drawHand(landmarks) {
+      const w = handCanvas.width;
+      const h = handCanvas.height;
+      handCtx.clearRect(0, 0, w, h);
+      if (!landmarks) return;
 
-    const openCount = (state.expression.match(/\(/g) || []).length;
-    const closeCount = (state.expression.match(/\)/g) || []).length;
-    if (openCount <= closeCount) {
-      return;
-    }
+      // 摄像头画面被 CSS 镜像，骨架坐标也镜像
+      const points = landmarks.map((lm) => ({
+        x: (1 - lm.x) * w,
+        y: lm.y * h
+      }));
 
-    const last = state.expression.slice(-1);
-    if (last === "(" || /[+\-*/]$/.test(last)) {
-      return;
-    }
-    if (last === ".") {
-      state.expression += "0";
-    }
+      handCtx.lineWidth = 2;
+      handCtx.lineCap = 'round';
+      handCtx.strokeStyle = 'rgba(255, 104, 166, 0.9)';
+      handCtx.shadowColor = 'rgba(255, 104, 166, 0.75)';
+      handCtx.shadowBlur = 8;
 
-    state.expression += ")";
-    clearFeedback();
-    render();
-  }
+      for (const [a, b] of HAND_CONNECTIONS) {
+        handCtx.beginPath();
+        handCtx.moveTo(points[a].x, points[a].y);
+        handCtx.lineTo(points[b].x, points[b].y);
+        handCtx.stroke();
+      }
 
-  function toggleSign() {
-    if (state.justEvaluated) {
-      state.expression = state.expression.startsWith("-")
-        ? state.expression.slice(1)
-        : "-" + state.expression;
-      render();
-      return;
-    }
-
-    if (!state.expression || state.expression === "0") {
-      state.expression = "-";
-      clearFeedback();
-      render();
-      return;
-    }
-
-    if (state.expression === "-") {
-      state.expression = "0";
-      clearFeedback();
-      render();
-      return;
-    }
-
-    const trailingNumber = state.expression.match(/(\d+(?:\.\d*)?|\.\d+)$/);
-    if (!trailingNumber) {
-      return;
-    }
-
-    const start = state.expression.length - trailingNumber[0].length;
-    if (start > 0 && state.expression[start - 1] === "-") {
-      const beforeMinus = start >= 2 ? state.expression[start - 2] : "";
-      if (start === 1 || /[+\-*/(]/.test(beforeMinus)) {
-        state.expression =
-          state.expression.slice(0, start - 1) + state.expression.slice(start);
-        clearFeedback();
-        render();
-        return;
+      handCtx.shadowBlur = 0;
+      handCtx.fillStyle = '#ffd5e4';
+      for (const p of points) {
+        handCtx.beginPath();
+        handCtx.arc(p.x, p.y, 2.5, 0, Math.PI * 2);
+        handCtx.fill();
       }
     }
 
-    state.expression =
-      state.expression.slice(0, start) + "-" + state.expression.slice(start);
-    clearFeedback();
-    render();
-  }
+    startBtn.addEventListener('click', startCamera);
+    skipBtn.addEventListener('click', () => enterMouseMode('已进入鼠标模式。'));
 
-  function backspace() {
-    if (state.justEvaluated) {
-      state.justEvaluated = false;
-    }
+    // -------------------------------------------------------------------------
+    // 鼠标拖拽降级
+    // -------------------------------------------------------------------------
+    let dragging = false;
+    let dragStartX = 0;
+    let dragStartBloom = 0;
 
-    if (state.expression.length <= 1) {
-      state.expression = "0";
-    } else {
-      state.expression = state.expression.slice(0, -1);
-      if (!state.expression || state.expression === "-") {
-        state.expression = "0";
+    canvas.addEventListener('pointerdown', (event) => {
+      if (mode !== 'mouse') return;
+      pointerFromScreen(event.clientX / innerWidth, event.clientY / innerHeight);
+      pointerAmountTarget = 1;
+      dragging = true;
+      dragStartX = event.clientX;
+      dragStartBloom = bloomValue;
+      canvas.setPointerCapture(event.pointerId);
+    });
+
+    canvas.addEventListener('pointermove', (event) => {
+      if (mode === 'mouse') {
+        pointerFromScreen(event.clientX / innerWidth, event.clientY / innerHeight);
+        pointerAmountTarget = 1;
       }
+      if (!dragging || mode !== 'mouse') return;
+      const delta = (event.clientX - dragStartX) / Math.max(320, innerWidth);
+      manualTarget = THREE.MathUtils.clamp(dragStartBloom + delta * 1.65, 0, 1);
+      bloomTarget = manualTarget;
+      setBloomUI(manualTarget);
+    });
+
+    const endDrag = (event) => {
+      dragging = false;
+      if (canvas.hasPointerCapture(event.pointerId)) {
+        canvas.releasePointerCapture(event.pointerId);
+      }
+    };
+    canvas.addEventListener('pointerup', endDrag);
+    canvas.addEventListener('pointercancel', endDrag);
+
+    // -------------------------------------------------------------------------
+    // 状态推进 + 渲染
+    // -------------------------------------------------------------------------
+    function updateBloom(dt, now) {
+      if (mode === 'camera') {
+        if (handPresent) {
+          bloomTarget = handTarget;
+          handAmountTarget = 1;
+        } else if (now - lastHandAt > 650) {
+          // 手消失：先维持，之后缓慢回落，不完全归零
+          handTarget = Math.max(0.035, handTarget - dt * 0.13);
+          bloomTarget = handTarget;
+          handAmountTarget = 0;
+          pointerAmountTarget = 0;
+          if (now - lastHandAt > 1200) {
+            setStatus('未检测到手 · 缓慢回落', true);
+          }
+        } else {
+          bloomTarget = handTarget;
+        }
+      } else if (mode === 'mouse') {
+        bloomTarget = manualTarget;
+      } else {
+        bloomTarget = manualTarget;
+      }
+
+      const speed = mode === 'camera' ? 2.1 : 3.2;
+      bloomValue += (bloomTarget - bloomValue) * (1 - Math.exp(-dt * speed));
+      particleUniforms.uBloom.value = bloomValue;
+      setBloomUI(bloomValue);
     }
 
-    clearFeedback();
-    render();
-  }
+    function animate(now) {
+      const dt = Math.min(0.05, Math.max(0.001, (now - (animate.last || now)) / 1000));
+      animate.last = now;
+      const time = now * 0.001;
 
-  function clearAll() {
-    state.expression = "0";
-    state.justEvaluated = false;
-    state.history = "准备就绪";
-    elements.screen.classList.remove("is-error", "is-shaking");
-    elements.hint.classList.remove("is-error");
-    elements.hint.textContent = DEFAULT_HINT;
-    render();
-  }
+      updateBloom(dt, now);
 
-  function calculateCurrent() {
-    if (!state.expression || state.expression === "-") {
-      showError("请输入完整的算式");
-      return;
+      particleUniforms.uTime.value = time;
+      backdropUniforms.uTime.value = time;
+
+      // 手掌位置平滑跟随，花会向手的方向轻轻倾斜
+      handX += (handXTarget - handX) * (1 - Math.exp(-dt * 4.5));
+      handY += (handYTarget - handY) * (1 - Math.exp(-dt * 4.5));
+      handAmount += (handAmountTarget - handAmount) * (1 - Math.exp(-dt * 3.2));
+      particleUniforms.uHand.value.set(handX, handY);
+      particleUniforms.uHandAmount.value = handAmount;
+
+      pointerAmount += (pointerAmountTarget - pointerAmount) * (1 - Math.exp(-dt * 4.2));
+      pointerPosition.lerp(pointerTarget, 1 - Math.exp(-dt * 8));
+      pointerSprite.position.copy(pointerPosition);
+      pointerSprite.visible = pointerAmount > 0.02;
+      particleUniforms.uPointerActive.value = pointerAmount;
+
+      const idleY = Math.sin(time * 0.17) * 0.055;
+      const idleX = Math.sin(time * 0.11) * 0.018;
+      flower.rotation.y = idleY + handX * handAmount * 0.34;
+      flower.rotation.x = idleX - handY * handAmount * 0.18;
+      flower.position.x = handX * handAmount * 0.28;
+      flower.position.y = -handY * handAmount * 0.15;
+
+      // 光点在花局部空间的坐标，供着色器计算触碰亮度
+      flower.updateMatrixWorld();
+      const localPointer = pointerPosition.clone();
+      flower.worldToLocal(localPointer);
+      particleUniforms.uPointer.value.copy(localPointer);
+
+      // 光点进入花的范围时轻微放大，离开后平滑恢复
+      const pointerRadius = Math.hypot(localPointer.x, localPointer.y);
+      const pointerProximity = THREE.MathUtils.clamp(
+        1 - (pointerRadius - 0.35) / 1.65,
+        0,
+        1
+      );
+      const pointerScale = 1 + pointerProximity * pointerAmount * 0.34;
+      pointerSprite.scale.setScalar((0.15 + pointerAmount * 0.035) * pointerScale);
+      pointerSprite.material.opacity = pointerAmount * (0.42 + pointerProximity * 0.2);
+
+      const coreGlow = THREE.MathUtils.smoothstep(bloomValue, 0.08, 0.7);
+      centerGlow.visible = coreGlow > 0.01;
+      centerGlow.material.opacity = coreGlow * 0.14;
+      centerGlow.scale.setScalar(0.26 + bloomValue * 0.1);
+
+      for (const mesh of petalMeshes) {
+        mesh.visible = false;
+      }
+
+      camera.position.x = Math.sin(time * 0.12) * 0.06;
+      camera.position.y = 0.52 + Math.sin(time * 0.16) * 0.035;
+      camera.lookAt(0, 0.08, 0);
+
+      composer.render();
+      requestAnimationFrame(animate);
     }
 
-    const original = state.expression;
-    try {
-      const result = calculate(original);
-      state.expression = result;
-      state.justEvaluated = true;
-      state.history = prettyExpression(original) + " =";
-      setHint(RESULT_HINT);
-      elements.screen.classList.remove("is-error");
-      render();
-    } catch (error) {
-      showError(error instanceof CalcError ? error.message : "计算失败，请检查算式");
+    // -------------------------------------------------------------------------
+    // Resize / 启动
+    // -------------------------------------------------------------------------
+    function resize() {
+      const w = innerWidth;
+      const h = innerHeight;
+      const dpr = Math.min(devicePixelRatio || 1, IS_MOBILE ? 1.5 : 1.75);
+      camera.aspect = w / h;
+      camera.updateProjectionMatrix();
+      renderer.setPixelRatio(dpr);
+      renderer.setSize(w, h);
+      composer.setPixelRatio(dpr);
+      composer.setSize(w, h);
+      particleUniforms.uPixelRatio.value = dpr;
     }
-  }
+    addEventListener('resize', resize);
 
-  function pulseKey(action, value) {
-    let selector = `.key[data-action="${action}"]`;
-    if (value !== undefined) {
-      selector += `[data-value="${value}"]`;
-    }
-    const key = elements.keypad.querySelector(selector);
-    if (!key) {
-      return;
-    }
-    key.classList.add("is-keyboard");
-    window.setTimeout(() => key.classList.remove("is-keyboard"), 120);
-  }
-
-  function dispatchAction(action, value) {
-    switch (action) {
-      case "digit":
-        appendDigit(value);
-        break;
-      case "decimal":
-        appendDecimal();
-        break;
-      case "operator":
-        appendOperator(value);
-        break;
-      case "paren":
-        appendParen(value);
-        break;
-      case "sign":
-        toggleSign();
-        break;
-      case "backspace":
-        backspace();
-        break;
-      case "clear":
-        clearAll();
-        break;
-      case "equals":
-        calculateCurrent();
-        break;
-      default:
-        break;
-    }
-  }
-
-  elements.keypad.addEventListener("click", (event) => {
-    const button = event.target.closest("button[data-action]");
-    if (!button) {
-      return;
-    }
-    if (event.detail > 0) {
-      button.blur();
-    }
-    dispatchAction(button.dataset.action, button.dataset.value);
-  });
-
-  document.addEventListener("keydown", (event) => {
-    if (event.defaultPrevented || event.ctrlKey || event.metaKey || event.altKey) {
-      return;
-    }
-
-    const activeElement = document.activeElement;
-    if (
-      activeElement &&
-      activeElement.tagName === "BUTTON" &&
-      (event.key === "Enter" || event.key === " ")
-    ) {
-      return;
-    }
-
-    if (
-      activeElement &&
-      (activeElement.tagName === "INPUT" ||
-        activeElement.tagName === "TEXTAREA" ||
-        activeElement.tagName === "SELECT")
-    ) {
-      return;
-    }
-
-    const key = event.key;
-    let handled = true;
-
-    if (/^[0-9]$/.test(key)) {
-      appendDigit(key);
-      pulseKey("digit", key);
-    } else if (key === "." || key === ",") {
-      appendDecimal();
-      pulseKey("decimal");
-    } else if (key === "+" || key === "-" || key === "*" || key === "/") {
-      appendOperator(key);
-      pulseKey("operator", key);
-    } else if (key === "x" || key === "X") {
-      appendOperator("*");
-      pulseKey("operator", "*");
-    } else if (key === "(" || key === ")") {
-      appendParen(key);
-      pulseKey("paren", key);
-    } else if (key === "Enter" || key === "=") {
-      calculateCurrent();
-      pulseKey("equals");
-    } else if (key === "Backspace") {
-      backspace();
-      pulseKey("backspace");
-    } else if (key === "Delete" || key === "Escape" || key === "c" || key === "C") {
-      clearAll();
-      pulseKey("clear");
-    } else {
-      handled = false;
-    }
-
-    if (handled) {
-      event.preventDefault();
-    }
-  });
-
-  elements.statusText.textContent = "本机运算";
-  elements.pageUrl.textContent =
-    window.location.protocol === "file:"
-      ? "离线可用"
-      : window.location.host || "单文件网页";
-
-  render();
-})();
-
-</script>
+    setBloomUI(bloomValue);
+    setStatus('点击开启摄像头，或先用鼠标体验', true);
+    requestAnimationFrame(animate);
+  </script>
 </body>
 </html>
